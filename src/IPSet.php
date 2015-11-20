@@ -207,6 +207,8 @@ class IPSet {
 				return $node;
 			}
 		}
+		// Unreachable, but fixes missing return statement
+		return null;
 	}
 
 	/**
@@ -215,6 +217,8 @@ class IPSet {
 	 * @param array &$node Tree node to optimize, by-reference
 	 *
 	 *  e.g.: 8.0.0.0/8 + 9.0.0.0/8 -> 8.0.0.0/7
+	 *
+	 * @return bool
 	 */
 	private static function recOptimize( &$node ) {
 		if ( $node[0] !== false && $node[0] !== true && self::recOptimize( $node[0] ) ) {
