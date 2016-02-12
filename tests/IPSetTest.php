@@ -29,14 +29,6 @@ use IPSet\IPSet;
  */
 class IPSetTest extends \PHPUnit_Framework_TestCase {
 
-	protected function setUp() {
-		parent::setUp();
-
-		// The IPSet::recOptimize method curses over 100 times.
-		// This setting defaults to 100.
-		ini_set( 'xdebug.max_nesting_level', 1000 );
-	}
-
 	/**
 	 * Provides test cases for IPSetTest::testIPSet
 	 *
@@ -252,6 +244,8 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffe0:0/110',
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffc0:0/107',
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffa0:0/107',
+					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0/112',
+					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0/111',
 				),
 				array(
 					'0.0.0.0' => false,
@@ -264,6 +258,9 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'ffff:ffff:ffff:ffff:ffff:ffff:fff4:4444' => true,
 					'ffff:ffff:ffff:ffff:ffff:ffff:fff9:8080' => true,
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff' => true,
+					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0' => true,
+					'ffff:ffff:ffff:ffff:ffff:ffff:fe01:0' => true,
+					'ffff:ffff:ffff:ffff:ffff:ffff:fe02:0' => false,
 				),
 			),
 		);
