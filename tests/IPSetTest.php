@@ -38,9 +38,9 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 	 * an array of IP => expected (boolean) result against the config dataset.
 	 */
 	public static function provideIPSets() {
-		$testcases = array(
-			'old_list_subset' => array(
-				array(
+		$testcases = [
+			'old_list_subset' => [
+				[
 					'208.80.152.162',
 					'10.64.0.123',
 					'10.64.0.124',
@@ -78,8 +78,8 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:862:102:26B6:FDFF:FEF5:AD9C',
 					'10.20.0.114',
 					'2620:0:862:102:26B6:FDFF:FEF5:7C38',
-				),
-				array(
+				],
+				[
 					'0.0.0.0' => false,
 					'255.255.255.255' => false,
 					'10.64.0.122' => false,
@@ -95,10 +95,10 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:862:1:26b6:fdff:fef5:abb3' => false,
 					'2620:0:862:1:26b6:fdff:fef5:abb4' => true,
 					'2620:0:862:1:26b6:fdff:fef5:abb5' => false,
-				),
-			),
-			'new_cidr_set' => array(
-				array(
+				],
+			],
+			'new_cidr_set' => [
+				[
 					'208.80.154.0/26',
 					'2620:0:861:1::/64',
 					'208.80.154.128/26',
@@ -122,8 +122,8 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'10.128.0.0/24',
 					'2620:0:863:101::/64',
 					'10.2.4.26',
-				),
-				array(
+				],
+				[
 					'0.0.0.0' => false,
 					'255.255.255.255' => false,
 					'10.2.4.25' => false,
@@ -141,11 +141,11 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:861:106::45' => false,
 					'2620:0:862:103::' => false,
 					'2620:0:862:102:10:20:0:113' => true,
-				),
-			),
-			'empty_set' => array(
-				array(),
-				array(
+				],
+			],
+			'empty_set' => [
+				[],
+				[
 					'0.0.0.0' => false,
 					'255.255.255.255' => false,
 					'10.2.4.25' => false,
@@ -163,17 +163,17 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:861:106::45' => false,
 					'2620:0:862:103::' => false,
 					'2620:0:862:102:10:20:0:113' => false,
-				),
-			),
-			'edge_cases' => array(
-				array(
+				],
+			],
+			'edge_cases' => [
+				[
 					'0.0.0.0',
 					'255.255.255.255',
 					'::',
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
 					'10.10.10.10/25', // host bits intentional
-				),
-				array(
+				],
+				[
 					'0.0.0.0' => true,
 					'255.255.255.255' => true,
 					'10.2.4.25' => false,
@@ -201,10 +201,10 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'10.10.10.177' => false,
 					'10.10.10.255' => false,
 					'10.10.11.0' => false,
-				),
-			),
-			'exercise_optimizer' => array(
-				array(
+				],
+			],
+			'exercise_optimizer' => [
+				[
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0/112',
 					'ffff:ffff:ffff:ffff:ffff:ffff:fffe:0/112',
 					'ffff:ffff:ffff:ffff:ffff:ffff:fffd:0/112',
@@ -241,8 +241,8 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffa0:0/107',
 					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0/112',
 					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0/111',
-				),
-				array(
+				],
+				[
 					'0.0.0.0' => false,
 					'255.255.255.255' => false,
 					'::' => false,
@@ -256,15 +256,28 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'ffff:ffff:ffff:ffff:ffff:ffff:fe00:0' => true,
 					'ffff:ffff:ffff:ffff:ffff:ffff:fe01:0' => true,
 					'ffff:ffff:ffff:ffff:ffff:ffff:fe02:0' => false,
-				),
-			),
-		);
+				],
+			],
+			'overlap' => [
+				[
+					// @covers addCidr "already added a larger supernet"
+					'10.10.10.0/25',
+					'10.10.10.0/26',
+				],
+				[
+					'0.0.0.0' => false,
+					'10.10.10.0' => true,
+					'10.10.10.1' => true,
+					'255.255.255.255' => false,
+				],
+			],
+		];
 		foreach ( $testcases as $desc => $pairs ) {
-			$testcases[$desc] = array(
+			$testcases[$desc] = [
 				$desc,
 				$pairs[0],
 				$pairs[1],
-			);
+			];
 		}
 		return $testcases;
 	}
@@ -280,5 +293,43 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 			$result = $ipset->match( $ip );
 			$this->assertEquals( $expected, $result, "Incorrect match() result for $ip in dataset $desc" );
 		}
+	}
+
+	public static function provideBadIPSets() {
+		return [
+			'bad mask ipv4' => [ '0.0.0.0/33' ],
+			'bad mask ipv6' => [ '2620:0:861:1::/129' ],
+			'inet fail' => [ '0af.0af' ],
+		];
+	}
+
+	/**
+	 * @expectedException PHPUnit_Framework_Error_Warning
+	 * @dataProvider provideBadIPSets
+	 */
+	public function testAddCidrWarning( $cidr ) {
+		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
+		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
+		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
+		$ipset = @new IPSet( array( $cidr ) );
+		// 2. Catches error as exception
+		$ipset = new IPSet( [ $cidr ] );
+	}
+
+	public static function provideBadMatches() {
+		return [
+			'inet fail' => [ '0af.0af', false ],
+		];
+	}
+
+	/**
+	 * @expectedException PHPUnit_Framework_Error_Warning
+	 * @dataProvider provideBadMatches
+	 */
+	public function testMatchWarning( $ip, $expected ) {
+		$ipset = new IPSet( [] );
+		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
+		$this->assertEquals( $expected, @$ipset->match( $ip ) );
+		$ipset->match( $ip );
 	}
 }
