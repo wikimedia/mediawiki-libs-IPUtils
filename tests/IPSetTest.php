@@ -38,9 +38,8 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 	 * an array of IP => expected (boolean) result against the config dataset.
 	 */
 	public static function provideIPSets() {
-		return array(
-			array(
-				'old_list_subset',
+		$testcases = array(
+			'old_list_subset' => array(
 				array(
 					'208.80.152.162',
 					'10.64.0.123',
@@ -98,8 +97,7 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:862:1:26b6:fdff:fef5:abb5' => false,
 				),
 			),
-			array(
-				'new_cidr_set',
+			'new_cidr_set' => array(
 				array(
 					'208.80.154.0/26',
 					'2620:0:861:1::/64',
@@ -145,8 +143,7 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:862:102:10:20:0:113' => true,
 				),
 			),
-			array(
-				'empty_set',
+			'empty_set' => array(
 				array(),
 				array(
 					'0.0.0.0' => false,
@@ -168,8 +165,7 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'2620:0:862:102:10:20:0:113' => false,
 				),
 			),
-			array(
-				'edge_cases',
+			'edge_cases' => array(
 				array(
 					'0.0.0.0',
 					'255.255.255.255',
@@ -207,8 +203,7 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 					'10.10.11.0' => false,
 				),
 			),
-			array(
-				'exercise_optimizer',
+			'exercise_optimizer' => array(
 				array(
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0/112',
 					'ffff:ffff:ffff:ffff:ffff:ffff:fffe:0/112',
@@ -264,6 +259,14 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 				),
 			),
 		);
+		foreach ( $testcases as $desc => $pairs ) {
+			$testcases[$desc] = array(
+				$desc,
+				$pairs[0],
+				$pairs[1],
+			);
+		}
+		return $testcases;
 	}
 
 	/**
