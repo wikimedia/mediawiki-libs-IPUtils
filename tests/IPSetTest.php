@@ -20,9 +20,9 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-namespace IPSet\Test;
+namespace Wikimedia\IPSet\Test;
 
-use IPSet\IPSet;
+use Wikimedia\IPSet;
 
 /**
  * @group IPSet

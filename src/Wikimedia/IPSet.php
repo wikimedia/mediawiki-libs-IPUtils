@@ -20,13 +20,14 @@
  * @file
  * @author Brandon Black <blblack@gmail.com>
  */
-namespace IPSet;
+namespace Wikimedia;
 
 /**
  * Matches IP addresses against a set of CIDR specifications
  *
  * Usage:
  *
+ *     use Wikimedia\IPSet;
  *     // At startup, calculate the optimized data structure for the set:
  *     $ipset = new IPSet( [
  *         '208.80.154.0/26',
