@@ -27,7 +27,7 @@ use Wikimedia\IPSet;
 /**
  * @group IPSet
  */
-class IPSetTest extends \PHPUnit_Framework_TestCase {
+class IPSetTest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * Provides test cases for IPSetTest::testIPSet
@@ -304,10 +304,16 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException PHPUnit_Framework_Error_Warning
 	 * @dataProvider provideBadIPSets
 	 */
 	public function testAddCidrWarning( $cidr ) {
+		if ( class_exists( \PHPUnit_Framework_Error_Warning::class ) ) {
+			// PHPUnit 4.8
+			$this->setExpectedException( \PHPUnit_Framework_Error_Warning::class );
+		} else {
+			// PHPUnit 6+
+			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+		}
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
 		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
@@ -323,10 +329,16 @@ class IPSetTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException PHPUnit_Framework_Error_Warning
 	 * @dataProvider provideBadMatches
 	 */
 	public function testMatchWarning( $ip, $expected ) {
+		if ( class_exists( \PHPUnit_Framework_Error_Warning::class ) ) {
+			// PHPUnit 4.8
+			$this->setExpectedException( \PHPUnit_Framework_Error_Warning::class );
+		} else {
+			// PHPUnit 6+
+			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+		}
 		$ipset = new IPSet( [] );
 		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
 		$this->assertEquals( $expected, @$ipset->match( $ip ) );
