@@ -295,24 +295,25 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
-	public static function provideBadIPSets() {
+	public static function provideBadMaskSets() {
 		return [
 			'bad mask ipv4' => [ '0.0.0.0/33' ],
 			'bad mask ipv6' => [ '2620:0:861:1::/129' ],
-			'inet fail' => [ '0af.0af' ],
 		];
 	}
 
 	/**
-	 * @dataProvider provideBadIPSets
+	 * @dataProvider provideBadMaskSets
 	 */
 	public function testAddCidrWarning( $cidr ) {
 		if ( class_exists( \PHPUnit_Framework_Error_Warning::class ) ) {
 			// PHPUnit 4.8
-			$this->setExpectedException( \PHPUnit_Framework_Error_Warning::class );
+			$this->setExpectedExceptionRegExp( \PHPUnit_Framework_Error_Warning::class,
+				'/IPSet: Bad mask.*/' );
 		} else {
 			// PHPUnit 6+
 			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+			$this->expectExceptionMessageRegExp( '/IPSet: Bad mask.*/' );
 		}
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
@@ -320,6 +321,22 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 		$ipset = @new IPSet( array( $cidr ) );
 		// 2. Catches error as exception
 		$ipset = new IPSet( [ $cidr ] );
+	}
+
+	public static function provideBadIPSets() {
+		return [
+			'inet fail' => [ '0af.0af' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideBadIPSets
+	 */
+	public function testAddCidrFailure( $cidr ) {
+		$method = new \ReflectionMethod( IPSet::class, 'addCidr' );
+		$method->setAccessible( true );
+		$ipset = new IPSet( [ $cidr ] );
+		$this->assertFalse( $method->invoke( $ipset, $cidr ) );
 	}
 
 	public static function provideBadMatches() {
@@ -331,17 +348,10 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * @dataProvider provideBadMatches
 	 */
-	public function testMatchWarning( $ip, $expected ) {
-		if ( class_exists( \PHPUnit_Framework_Error_Warning::class ) ) {
-			// PHPUnit 4.8
-			$this->setExpectedException( \PHPUnit_Framework_Error_Warning::class );
-		} else {
-			// PHPUnit 6+
-			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
-		}
+	public function testMatchFailure( $ip, $expected ) {
 		$ipset = new IPSet( [] );
 		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
 		$this->assertEquals( $expected, @$ipset->match( $ip ) );
-		$ipset->match( $ip );
+		$this->assertFalse( $ipset->match( $ip ) );
 	}
 }
