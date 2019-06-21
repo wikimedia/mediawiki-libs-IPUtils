@@ -23,50 +23,69 @@
 
 namespace Wikimedia;
 
-// Some regex definition to "play" with IP address and IP address ranges
-
-// An IPv4 address is made of 4 bytes from x00 to xFF which is d0 to d255
-define( 'RE_IP_BYTE', '(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])' );
-define( 'RE_IP_ADD', RE_IP_BYTE . '\.' . RE_IP_BYTE . '\.' . RE_IP_BYTE . '\.' . RE_IP_BYTE );
-// An IPv4 range is an IP address and a prefix (d1 to d32)
-define( 'RE_IP_PREFIX', '(3[0-2]|[12]?\d)' );
-define( 'RE_IP_RANGE', RE_IP_ADD . '\/' . RE_IP_PREFIX );
-
-// An IPv6 address is made up of 8 words (each x0000 to xFFFF).
-// However, the "::" abbreviation can be used on consecutive x0000 words.
-define( 'RE_IPV6_WORD', '([0-9A-Fa-f]{1,4})' );
-define( 'RE_IPV6_PREFIX', '(12[0-8]|1[01][0-9]|[1-9]?\d)' );
-define( 'RE_IPV6_ADD',
-	'(?:' . // starts with "::" (including "::")
-		':(?::|(?::' . RE_IPV6_WORD . '){1,7})' .
-	'|' . // ends with "::" (except "::")
-		RE_IPV6_WORD . '(?::' . RE_IPV6_WORD . '){0,6}::' .
-	'|' . // contains one "::" in the middle (the ^ makes the test fail if none found)
-		RE_IPV6_WORD . '(?::((?(-1)|:))?' . RE_IPV6_WORD . '){1,6}(?(-2)|^)' .
-	'|' . // contains no "::"
-		RE_IPV6_WORD . '(?::' . RE_IPV6_WORD . '){7}' .
-	')'
-);
-// An IPv6 range is an IP address and a prefix (d1 to d128)
-define( 'RE_IPV6_RANGE', RE_IPV6_ADD . '\/' . RE_IPV6_PREFIX );
-// For IPv6 canonicalization (NOT for strict validation; these are quite lax!)
-define( 'RE_IPV6_GAP', ':(?:0+:)*(?::(?:0+:)*)?' );
-define( 'RE_IPV6_V4_PREFIX', '0*' . RE_IPV6_GAP . '(?:ffff:)?' );
-
-// This might be useful for regexps used elsewhere, matches any IPv4 or IPv6 address or network
-define( 'IP_ADDRESS_STRING',
-	'(?:' .
-		RE_IP_ADD . '(?:\/' . RE_IP_PREFIX . ')?' . // IPv4
-	'|' .
-		RE_IPV6_ADD . '(?:\/' . RE_IPV6_PREFIX . ')?' . // IPv6
-	')'
-);
-
 /**
  * A collection of public static functions to play with IP address
  * and IP ranges.
  */
 class IPUtils {
+
+	/**
+	 * An IPv4 address is made of 4 bytes from x00 to xFF which is d0 to d255
+	 * @public
+	 */
+	const RE_IP_BYTE = '(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])';
+	/** @private */
+	const RE_IP_ADD = self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE;
+	/**
+	 * An IPv4 range is an IP address and a prefix (d1 to d32)
+	 * @private
+	 */
+	const RE_IP_PREFIX = '(3[0-2]|[12]?\d)';
+	/** @private */
+	const RE_IP_RANGE = self::RE_IP_ADD . '\/' . self::RE_IP_PREFIX;
+
+	/**
+	 * An IPv6 address is made up of 8 words (each x0000 to xFFFF).
+	 * However, the "::" abbreviation can be used on consecutive x0000 words.
+	 * @private
+	 */
+	const RE_IPV6_WORD = '([0-9A-Fa-f]{1,4})';
+	/** @private */
+	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9]?\d)';
+	/** @private */
+	const RE_IPV6_ADD =
+		'(?:' . // starts with "::" (including "::")
+			':(?::|(?::' . self::RE_IPV6_WORD . '){1,7})' .
+		'|' . // ends with "::" (except "::")
+			self::RE_IPV6_WORD . '(?::' . self::RE_IPV6_WORD . '){0,6}::' .
+		'|' . // contains one "::" in the middle (the ^ makes the test fail if none found)
+			self::RE_IPV6_WORD . '(?::((?(-1)|:))?' . self::RE_IPV6_WORD . '){1,6}(?(-2)|^)' .
+		'|' . // contains no "::"
+			self::RE_IPV6_WORD . '(?::' . self::RE_IPV6_WORD . '){7}' .
+		')';
+	/**
+	 * An IPv6 range is an IP address and a prefix (d1 to d128)
+	 * @private
+	 */
+	const RE_IPV6_RANGE = self::RE_IPV6_ADD . '\/' . self::RE_IPV6_PREFIX;
+	/**
+	 * For IPv6 canonicalization (NOT for strict validation; these are quite lax!)
+	 * @private
+	 */
+	const RE_IPV6_GAP = ':(?:0+:)*(?::(?:0+:)*)?';
+	/** @private */
+	const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
+
+	/**
+	 * This might be useful for regexps used elsewhere, matches any IPv4 or IPv6 address or network
+	 * @private
+	 */
+	const RE_IP_ADDRESS_STRING =
+		'(?:' .
+			self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?' . // IPv4
+		'|' .
+			self::RE_IPV6_ADD . '(?:\/' . self::RE_IPV6_PREFIX . ')?' . // IPv6
+		')';
 
 	/**
 	 * Determine if a string is as valid IP address or network (CIDR prefix).
@@ -77,7 +96,7 @@ class IPUtils {
 	 * @return bool
 	 */
 	public static function isIPAddress( $ip ) {
-		return (bool)preg_match( '/^' . IP_ADDRESS_STRING . '$/', $ip );
+		return (bool)preg_match( '/^' . self::RE_IP_ADDRESS_STRING . '$/', $ip );
 	}
 
 	/**
@@ -88,7 +107,7 @@ class IPUtils {
 	 * @return bool
 	 */
 	public static function isIPv6( $ip ) {
-		return (bool)preg_match( '/^' . RE_IPV6_ADD . '(?:\/' . RE_IPV6_PREFIX . ')?$/', $ip );
+		return (bool)preg_match( '/^' . self::RE_IPV6_ADD . '(?:\/' . self::RE_IPV6_PREFIX . ')?$/', $ip );
 	}
 
 	/**
@@ -99,7 +118,7 @@ class IPUtils {
 	 * @return bool
 	 */
 	public static function isIPv4( $ip ) {
-		return (bool)preg_match( '/^' . RE_IP_ADD . '(?:\/' . RE_IP_PREFIX . ')?$/', $ip );
+		return (bool)preg_match( '/^' . self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?$/', $ip );
 	}
 
 	/**
@@ -111,8 +130,8 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValid( $ip ) {
-		return ( preg_match( '/^' . RE_IP_ADD . '$/', $ip )
-			|| preg_match( '/^' . RE_IPV6_ADD . '$/', $ip ) );
+		return ( preg_match( '/^' . self::RE_IP_ADD . '$/', $ip )
+			|| preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip ) );
 	}
 
 	/**
@@ -124,8 +143,8 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValidRange( $ipRange ) {
-		return ( preg_match( '/^' . RE_IPV6_RANGE . '$/', $ipRange )
-			|| preg_match( '/^' . RE_IP_RANGE . '$/', $ipRange ) );
+		return ( preg_match( '/^' . self::RE_IPV6_RANGE . '$/', $ipRange )
+			|| preg_match( '/^' . self::RE_IP_RANGE . '$/', $ipRange ) );
 	}
 
 	/**
@@ -186,7 +205,7 @@ class IPUtils {
 			);
 		}
 		// Remove leading zeros from each bloc as needed
-		$ip = preg_replace( '/(^|:)0+(' . RE_IPV6_WORD . ')/', '$1$2', $ip );
+		$ip = preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip );
 
 		return $ip;
 	}
@@ -253,7 +272,7 @@ class IPUtils {
 	 */
 	public static function splitHostAndPort( $both ) {
 		if ( substr( $both, 0, 1 ) === '[' ) {
-			if ( preg_match( '/^\[(' . RE_IPV6_ADD . ')\](?::(?P<port>\d+))?$/', $both, $m ) ) {
+			if ( preg_match( '/^\[(' . self::RE_IPV6_ADD . ')\](?::(?P<port>\d+))?$/', $both, $m ) ) {
 				if ( isset( $m['port'] ) ) {
 					return [ $m[1], intval( $m['port'] ) ];
 				} else {
@@ -267,7 +286,7 @@ class IPUtils {
 		$numColons = substr_count( $both, ':' );
 		if ( $numColons >= 2 ) {
 			// Is it a bare IPv6 address?
-			if ( preg_match( '/^' . RE_IPV6_ADD . '$/', $both ) ) {
+			if ( preg_match( '/^' . self::RE_IPV6_ADD . '$/', $both ) ) {
 				return [ $both, false ];
 			} else {
 				// Not valid IPv6, but too many colons for anything else
@@ -340,7 +359,7 @@ class IPUtils {
 			$ip_oct .= ':' . substr( $ip_hex, 4 * $n, 4 );
 		}
 		// NO leading zeroes
-		$ip_oct = preg_replace( '/(^|:)0+(' . RE_IPV6_WORD . ')/', '$1$2', $ip_oct );
+		$ip_oct = preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip_oct );
 
 		return $ip_oct;
 	}
@@ -686,15 +705,15 @@ class IPUtils {
 		}
 		// IPv6 loopback address
 		$m = [];
-		if ( preg_match( '/^0*' . RE_IPV6_GAP . '1$/', $addr, $m ) ) {
+		if ( preg_match( '/^0*' . self::RE_IPV6_GAP . '1$/', $addr, $m ) ) {
 			return '127.0.0.1';
 		}
 		// IPv4-mapped and IPv4-compatible IPv6 addresses
-		if ( preg_match( '/^' . RE_IPV6_V4_PREFIX . '(' . RE_IP_ADD . ')$/i', $addr, $m ) ) {
+		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . '(' . self::RE_IP_ADD . ')$/i', $addr, $m ) ) {
 			return $m[1];
 		}
-		if ( preg_match( '/^' . RE_IPV6_V4_PREFIX . RE_IPV6_WORD .
-			':' . RE_IPV6_WORD . '$/i', $addr, $m )
+		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . self::RE_IPV6_WORD .
+			':' . self::RE_IPV6_WORD . '$/i', $addr, $m )
 		) {
 			return long2ip( ( hexdec( $m[1] ) << 16 ) + hexdec( $m[2] ) );
 		}
