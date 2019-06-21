@@ -122,7 +122,6 @@ class IPUtils {
 	 *
 	 * @param string $ipRange
 	 * @return bool True if it is valid
-	 * @since 1.30
 	 */
 	public static function isValidRange( $ipRange ) {
 		return ( preg_match( '/^' . RE_IPV6_RANGE . '$/', $ipRange )
@@ -646,8 +645,6 @@ class IPUtils {
 
 	/**
 	 * Determines if an IP address is a list of CIDR a.b.c.d/n ranges.
-	 *
-	 * @since 1.25
 	 *
 	 * @param string $ip the IP to check
 	 * @param array $ranges the IP ranges, each element a range
