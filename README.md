@@ -16,7 +16,7 @@ Usage
 use Wikimedia\IPUtils;
 
 IPUtils::isIPAddress( '::1' );
-IP::isIPv4( '124.24.52.13' );
+IPUtils::isIPv4( '124.24.52.13' );
 </pre>
 
 
