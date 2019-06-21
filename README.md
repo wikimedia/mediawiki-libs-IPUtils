@@ -36,7 +36,7 @@ during the [MediaWiki 1.34][] development cycle.
 
 
 ---
-[MediaWiki 1.16]: https://www.mediawiki.org/wiki/MediaWiki_1.7
+[MediaWiki 1.7]: https://www.mediawiki.org/wiki/MediaWiki_1.7
 [r15572]: https://www.mediawiki.org/wiki/Special:Code/MediaWiki/15572
 [MediaWiki 1.34]: https://www.mediawiki.org/wiki/MediaWiki_1.34
 [Latest Stable Version]: https://poser.pugx.org/wikimedia/ip-utils/v/stable.svg
