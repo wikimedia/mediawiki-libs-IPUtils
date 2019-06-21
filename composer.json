@@ -1,0 +1,44 @@
+{
+	"name": "wikimedia/ip-utils",
+	"description": "Functions and constants to play with IP addresses and ranges",
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://www.mediawiki.org/wiki/IPUtils",
+	"authors": [
+		{
+			"name": "MediaWiki developers",
+			"email": "wikitech-l@lists.wikimedia.org"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Wikimedia\\": "src/"
+		}
+	},
+	"require": {
+		"php": ">=5.6.99",
+		"wikimedia/base-convert": "^2.0.0",
+		"wikimedia/ip-set": "^2.0.0"
+	},
+	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.3.2",
+		"mediawiki/mediawiki-codesniffer": "24.0.0",
+		"mediawiki/minus-x": "0.3.1",
+		"ockcyp/covers-validator": "0.5.1 || 0.6.1",
+		"phpunit/phpunit": "4.8.36 || ^6.5"
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor",
+			"phpunit",
+			"covers-validator",
+			"phpcs -sp",
+			"minus-x check ."
+		],
+		"cover": "phpunit --coverage-html coverage",
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		]
+	}
+}
