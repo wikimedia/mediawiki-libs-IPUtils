@@ -494,7 +494,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 		// Check internal logic
 		// 0 mask always result in [ 0, 0 ]
-		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '192.0.0.2/0' ) );
+		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '192.0.0.2/-' ) );
 		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '0.0.0.0/0' ) );
 		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '255.255.255.255/0' ) );
 
@@ -680,6 +680,49 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0:0:fef:0:0:0:e:fbb/96', '0:0:fef::e:fbb/96' ],
 			[ 'abbc:2004:0:0::0:0/40', 'abbc:2004::/40' ],
 			[ 'aebc:2004:f:0:0:0:0:0/80', 'aebc:2004:f::/80' ],
+		];
+	}
+
+	/**
+	 * @covers \Wikimedia\IPUtils::parseRange()
+	 * @covers \Wikimedia\IPUtils::parseRange6()
+	 * @covers \Wikimedia\IPUtils::parseCIDR()
+	 * @covers \Wikimedia\IPUtils::parseCIDR6()
+	 * @dataProvider provideIPsToConvertToRanges
+	 */
+	public function testParseRange( $range, $hexRange ) {
+		$this->assertEquals( $hexRange, IPUtils::parseRange( $range ), "Range parsing" );
+	}
+
+	/**
+	 * Provider for IPUtilsTest::testParseRange()
+	 */
+	public function provideIPsToConvertToRanges() {
+		return [
+			[ '116.17.184.5/32', [ '7411B805', '7411B805' ] ],
+			[ '116.17.184.5-116.17.184.5', [ '7411B805', '7411B805' ] ],
+			[ '0.17.184.5/30', [ '0011B804', '0011B807' ] ],
+			[ '0.17.184.4-0.17.184.7', [ '0011B804', '0011B807' ] ],
+			[ '16.17.184.1/24', [ '1011B800', '1011B8FF' ] ],
+			[ '16.17.184.0-16.17.184.255', [ '1011B800', '1011B8FF' ] ],
+			[ '30.242.52.14/0', [ '00000000', 'FFFFFFFF' ] ],
+			[ '30.242.52.14/1', [ '00000000', '7FFFFFFF' ] ],
+			[ '0.0.0.0-127.255.255.255', [ '00000000', '7FFFFFFF' ] ],
+			[ '10.232.52.13/8', [ '0A000000', '0AFFFFFF' ] ],
+			[ '10.0.0.0-10.255.255.255', [ '0A000000', '0AFFFFFF' ] ],
+			[ '::e:f:2001/96', [ 'v6-00000000000000000000000E00000000', 'v6-00000000000000000000000EFFFFFFFF' ] ],
+			[ '0:0:0:0:0:e:0:0-0:0:0:0:0:e:ffff:ffff', [ 'v6-00000000000000000000000E00000000', 'v6-00000000000000000000000EFFFFFFFF' ] ],
+			[ '::c:f:2001/128', [ 'v6-00000000000000000000000C000F2001', 'v6-00000000000000000000000C000F2001' ] ],
+			[ '0:0:0:0:0:c:f:2001-0:0:0:0:0:c:f:2001', [ 'v6-00000000000000000000000C000F2001', 'v6-00000000000000000000000C000F2001' ] ],
+			[ '::10:f:2001/70', [ 'v6-00000000000000000000000000000000', 'v6-000000000000000003FFFFFFFFFFFFFF' ] ],
+			[ '0:0:0:0:0:0:0:0-0:0:0:0:3ff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-000000000000000003FFFFFFFFFFFFFF' ] ],
+			[ '::fe:f:2001/1', [ 'v6-00000000000000000000000000000000', 'v6-7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			[ '0:0:0:0:0:0:0:0-7fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			[ '::6d:f:2001/8', [ 'v6-00000000000000000000000000000000', 'v6-00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			[ '0:0:0:0:0:0:0:0-ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			// We don't support /0 ranges
+			// [ '::fe:f:2001/0', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			[ '0:0:0:0:0:0:0:0-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
 		];
 	}
 }
