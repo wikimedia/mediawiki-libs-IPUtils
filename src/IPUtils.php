@@ -205,9 +205,7 @@ class IPUtils {
 			);
 		}
 		// Remove leading zeros from each bloc as needed
-		$ip = preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip );
-
-		return $ip;
+		return preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip );
 	}
 
 	/**
@@ -359,9 +357,7 @@ class IPUtils {
 			$ip_oct .= ':' . substr( $ip_hex, 4 * $n, 4 );
 		}
 		// NO leading zeroes
-		$ip_oct = preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip_oct );
-
-		return $ip_oct;
+		return preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip_oct );
 	}
 
 	/**
