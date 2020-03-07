@@ -54,13 +54,17 @@ class IPUtils {
 	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9]?\d)';
 	/** @private */
 	const RE_IPV6_ADD =
-		'(?:' . // starts with "::" (including "::")
+		'(?:' .
+			// starts with "::" (including "::")
 			':(?::|(?::' . self::RE_IPV6_WORD . '){1,7})' .
-		'|' . // ends with "::" (except "::")
+		'|' .
+			// ends with "::" (except "::")
 			self::RE_IPV6_WORD . '(?::' . self::RE_IPV6_WORD . '){0,6}::' .
-		'|' . // contains one "::" in the middle (the ^ makes the test fail if none found)
+		'|' .
+			// contains one "::" in the middle (the ^ makes the test fail if none found)
 			self::RE_IPV6_WORD . '(?::((?(-1)|:))?' . self::RE_IPV6_WORD . '){1,6}(?(-2)|^)' .
-		'|' . // contains no "::"
+		'|' .
+			// contains no "::"
 			self::RE_IPV6_WORD . '(?::' . self::RE_IPV6_WORD . '){7}' .
 		')';
 	/**
@@ -82,9 +86,11 @@ class IPUtils {
 	 */
 	const RE_IP_ADDRESS_STRING =
 		'(?:' .
-			self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?' . // IPv4
+			// IPv4
+			self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?' .
 		'|' .
-			self::RE_IPV6_ADD . '(?:\/' . self::RE_IPV6_PREFIX . ')?' . // IPv6
+			// IPv6
+			self::RE_IPV6_ADD . '(?:\/' . self::RE_IPV6_PREFIX . ')?' .
 		')';
 
 	/**
@@ -161,16 +167,14 @@ class IPUtils {
 		if ( $ip === '' ) {
 			return null;
 		}
-		/* If not an IP, just return trimmed value, since sanitizeIP() is called
-		 * in a number of contexts where usernames are supplied as input.
-		 */
+		// If not an IP, just return trimmed value, since sanitizeIP() is called
+		// in a number of contexts where usernames are supplied as input.
 		if ( !self::isIPAddress( $ip ) ) {
 			return $ip;
 		}
 		if ( self::isIPv4( $ip ) ) {
 			// Remove leading 0's from octet representation of IPv4 address
-			$ip = preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
-			return $ip;
+			return preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
 		}
 		// Remove any whitespaces, convert to upper case
 		$ip = strtoupper( $ip );
@@ -186,18 +190,22 @@ class IPUtils {
 			// If the '::' is at the beginning...
 			if ( $abbrevPos == 0 ) {
 				$repeat = '0:';
-				$extra = ( $ip == '::' ) ? '0' : ''; // for the address '::'
-				$pad = 9; // 7+2 (due to '::')
+				// for the address '::'
+				$extra = ( $ip == '::' ) ? '0' : '';
+				// 7+2 (due to '::')
+				$pad = 9;
 			// If the '::' is at the end...
 			} elseif ( $abbrevPos == ( $addressEnd - 1 ) ) {
 				$repeat = ':0';
 				$extra = '';
-				$pad = 9; // 7+2 (due to '::')
+				// 7+2 (due to '::')
+				$pad = 9;
 			// If the '::' is in the middle...
 			} else {
 				$repeat = ':0';
 				$extra = ':';
-				$pad = 8; // 6+2 (due to '::')
+				// 6+2 (due to '::')
+				$pad = 8;
 			}
 			$ip = str_replace( '::',
 				str_repeat( $repeat, $pad - substr_count( $ip, ':' ) ) . $extra,
@@ -216,7 +224,8 @@ class IPUtils {
 	 * @return string
 	 */
 	public static function prettifyIP( $ip ) {
-		$ip = self::sanitizeIP( $ip ); // normalize (removes '::')
+		// normalize (removes '::')
+		$ip = self::sanitizeIP( $ip );
 		if ( self::isIPv6( $ip ) ) {
 			// Split IP into an address and a CIDR
 			if ( strpos( $ip, '/' ) !== false ) {
@@ -230,12 +239,14 @@ class IPUtils {
 			while ( preg_match(
 				'!(?:^|:)0(?::0)+(?:$|:)!', $ip, $m, PREG_OFFSET_CAPTURE, $offset
 			) ) {
-				list( $match, $pos ) = $m[0]; // full match
+				// full match
+				list( $match, $pos ) = $m[0];
 				if ( strlen( $match ) > strlen( $longest ) ) {
 					$longest = $match;
 					$longestPos = $pos;
 				}
-				$offset = ( $pos + strlen( $match ) ); // advance
+				// advance
+				$offset = ( $pos + strlen( $match ) );
 			}
 			if ( $longest !== false ) {
 				// Replace this portion of the string with the '::' abbreviation
@@ -335,9 +346,11 @@ class IPUtils {
 	 * @return string Quad-dotted (IPv4) or octet notation (IPv6)
 	 */
 	public static function formatHex( $hex ) {
-		if ( substr( $hex, 0, 3 ) == 'v6-' ) { // IPv6
+		if ( substr( $hex, 0, 3 ) == 'v6-' ) {
+			// IPv6
 			return self::hexToOctet( substr( $hex, 3 ) );
-		} else { // IPv4
+		} else {
+			// IPv4
 			return self::hexToQuad( $hex );
 		}
 	}
@@ -392,15 +405,24 @@ class IPUtils {
 		static $privateSet = null;
 		if ( !$privateSet ) {
 			$privateSet = new IPSet( [
-				'10.0.0.0/8', # RFC 1918 (private)
-				'172.16.0.0/12', # RFC 1918 (private)
-				'192.168.0.0/16', # RFC 1918 (private)
-				'0.0.0.0/8', # this network
-				'127.0.0.0/8', # loopback
-				'fc00::/7', # RFC 4193 (local)
-				'0:0:0:0:0:0:0:1', # loopback
-				'169.254.0.0/16', # link-local
-				'fe80::/10', # link-local
+				// RFC 1918 (private)
+				'10.0.0.0/8',
+				// RFC 1918 (private)
+				'172.16.0.0/12',
+				// RFC 1918 (private)
+				'192.168.0.0/16',
+				// this network
+				'0.0.0.0/8',
+				// loopback
+				'127.0.0.0/8',
+				// RFC 4193 (local)
+				'fc00::/7',
+				// loopback
+				'0:0:0:0:0:0:0:1',
+				// link-local
+				'169.254.0.0/16',
+				// link-local
+				'fe80::/10',
 			] );
 		}
 		return !$privateSet->match( $ip );
@@ -427,14 +449,14 @@ class IPUtils {
 			$n = ip2long( $ip );
 			if ( $n < 0 ) {
 				$n += 2 ** 32;
-				# On 32-bit platforms (and on Windows), 2^32 does not fit into an int,
-				# so $n becomes a float. We convert it to string instead.
+				// On 32-bit platforms (and on Windows), 2^32 does not fit into an int,
+				// so $n becomes a float. We convert it to string instead.
 				if ( is_float( $n ) ) {
 					$n = (string)$n;
 				}
 			}
 			if ( $n !== false ) {
-				# Floating points can handle the conversion; faster than \Wikimedia\base_convert()
+				// Floating points can handle the conversion; faster than \Wikimedia\base_convert()
 				$n = strtoupper( str_pad( base_convert( $n, 10, 16 ), 8, '0', STR_PAD_LEFT ) );
 			}
 		} else {
@@ -486,7 +508,7 @@ class IPUtils {
 			} else {
 				$network &= ~( ( 1 << ( 32 - $bits ) ) - 1 );
 			}
-			# Convert to unsigned
+			// Convert to unsigned
 			if ( $network < 0 ) {
 				$network += 2 ** 32;
 			}
@@ -542,7 +564,7 @@ class IPUtils {
 				$start = $end = false;
 			}
 		} else {
-			# Single IP
+			// Single IP
 			$start = $end = self::toHex( $range );
 		}
 		if ( $start === false || $end === false ) {
@@ -561,7 +583,7 @@ class IPUtils {
 	 * @return array [string, int]
 	 */
 	private static function parseCIDR6( $range ) {
-		# Explode into <expanded IP,range>
+		// Explode into <expanded IP,range>
 		$parts = explode( '/', self::sanitizeIP( $range ), 2 );
 		if ( count( $parts ) != 2 ) {
 			return [ false, false ];
@@ -572,12 +594,12 @@ class IPUtils {
 			if ( $bits == 0 ) {
 				$network = "0";
 			} else {
-				# Native 32 bit functions WONT work here!!!
-				# Convert to a padded binary number
+				// Native 32 bit functions WONT work here!!!
+				// Convert to a padded binary number
 				$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
-				# Truncate the last (128-$bits) bits and replace them with zeros
+				// Truncate the last (128-$bits) bits and replace them with zeros
 				$network = str_pad( substr( $network, 0, $bits ), 128, 0, STR_PAD_RIGHT );
-				# Convert back to an integer
+				// Convert back to an integer
 				$network = \Wikimedia\base_convert( $network, 2, 10 );
 			}
 		} else {
@@ -602,7 +624,7 @@ class IPUtils {
 	 * @return array [string, string]
 	 */
 	private static function parseRange6( $range ) {
-		# Expand any IPv6 IP
+		// Expand any IPv6 IP
 		$range = self::sanitizeIP( $range );
 		// CIDR notation...
 		if ( strpos( $range, '/' ) !== false ) {
@@ -611,13 +633,13 @@ class IPUtils {
 				$start = $end = false;
 			} else {
 				$start = \Wikimedia\base_convert( $network, 10, 16, 32, false );
-				# Turn network to binary (again)
+				// Turn network to binary (again)
 				$end = \Wikimedia\base_convert( $network, 10, 2, 128 );
-				# Truncate the last (128-$bits) bits and replace them with ones
+				// Truncate the last (128-$bits) bits and replace them with ones
 				$end = str_pad( substr( $end, 0, $bits ), 128, 1, STR_PAD_RIGHT );
-				# Convert to hex
+				// Convert to hex
 				$end = \Wikimedia\base_convert( $end, 2, 16, 32, false );
-				# see toHex() comment
+				// see toHex() comment
 				$start = "v6-$start";
 				$end = "v6-$end";
 			}
@@ -630,7 +652,7 @@ class IPUtils {
 				$start = $end = false;
 			}
 		} else {
-			# Single IP
+			// Single IP
 			$start = $end = self::toHex( $range );
 		}
 		if ( $start === false || $end === false ) {
@@ -714,7 +736,7 @@ class IPUtils {
 			return long2ip( ( hexdec( $m[1] ) << 16 ) + hexdec( $m[2] ) );
 		}
 
-		return null; // give up
+		return null;
 	}
 
 	/**
@@ -724,11 +746,12 @@ class IPUtils {
 	 * @return string
 	 */
 	public static function sanitizeRange( $range ) {
-		list( /*...*/, $bits ) = self::parseCIDR( $range );
-		list( $start, /*...*/ ) = self::parseRange( $range );
+		list( , $bits ) = self::parseCIDR( $range );
+		list( $start, ) = self::parseRange( $range );
 		$start = self::formatHex( $start );
 		if ( $bits === false ) {
-			return $start; // wasn't actually a range
+			// wasn't actually a range
+			return $start;
 		}
 
 		return "$start/$bits";

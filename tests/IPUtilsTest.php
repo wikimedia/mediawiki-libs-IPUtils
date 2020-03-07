@@ -385,18 +385,30 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	 */
 	public static function provideIsPublic() {
 		return [
-			[ false, 'fc00::3' ], # RFC 4193 (local)
-			[ false, 'fc00::ff' ], # RFC 4193 (local)
-			[ false, '127.1.2.3' ], # loopback
-			[ false, '::1' ], # loopback
-			[ false, 'fe80::1' ], # link-local
-			[ false, '169.254.1.1' ], # link-local
-			[ false, '10.0.0.1' ], # RFC 1918 (private)
-			[ false, '172.16.0.1' ], # RFC 1918 (private)
-			[ false, '192.168.0.1' ], # RFC 1918 (private)
-			[ true, '2001:5c0:1000:a::133' ], # public
-			[ true, 'fc::3' ], # public
-			[ true, '00FC::' ] # public
+			// RFC 4193 (local)
+			[ false, 'fc00::3' ],
+			// RFC 4193 (local)
+			[ false, 'fc00::ff' ],
+			// loopback
+			[ false, '127.1.2.3' ],
+			// loopback
+			[ false, '::1' ],
+			// link-local
+			[ false, 'fe80::1' ],
+			// link-local
+			[ false, '169.254.1.1' ],
+			// RFC 1918 (private)
+			[ false, '10.0.0.1' ],
+			// RFC 1918 (private)
+			[ false, '172.16.0.1' ],
+			// RFC 1918 (private)
+			[ false, '192.168.0.1' ],
+			// public
+			[ true, '2001:5c0:1000:a::133' ],
+			// public
+			[ true, 'fc::3' ],
+			// public
+			[ true, '00FC::' ],
 		];
 	}
 
@@ -481,14 +493,14 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		$this->assertFalseCIDR( '192.0.2.0/33', "mask > 32" );
 
 		// Check internal logic
-		# 0 mask always result in [ 0, 0 ]
+		// 0 mask always result in [ 0, 0 ]
 		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '192.0.0.2/0' ) );
 		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '0.0.0.0/0' ) );
 		$this->assertEquals( [ 0, 0 ], IPUtils::parseCIDR( '255.255.255.255/0' ) );
 
 		// @todo FIXME: Add more tests.
 
-		# This part test network shifting
+		// This part test network shifting
 		$this->assertNet( '192.0.0.0', '192.0.0.2/24' );
 		$this->assertNet( '192.168.5.0', '192.168.5.13/24' );
 		$this->assertNet( '10.0.0.160', '10.0.0.161/28' );
@@ -537,9 +549,9 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 	/** Provider for testIPIsInRange() */
 	public static function provideIPsAndRanges() {
-		# Format: (expected boolean, address, range, optional message)
+		// Format: (expected boolean, address, range, optional message)
 		return [
-			# IPv4
+			// IPv4
 			[ true, '192.0.2.0', '192.0.2.0/24', 'Network address' ],
 			[ true, '192.0.2.77', '192.0.2.0/24', 'Simple address' ],
 			[ true, '192.0.2.255', '192.0.2.0/24', 'Broadcast address' ],
@@ -547,7 +559,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ false, '0.0.0.0', '192.0.2.0/24' ],
 			[ false, '255.255.255', '192.0.2.0/24' ],
 
-			# IPv6
+			// IPv6
 			[ false, '::1', '2001:DB8::/32' ],
 			[ false, '::', '2001:DB8::/32' ],
 			[ false, 'FE80::1', '2001:DB8::/32' ],
