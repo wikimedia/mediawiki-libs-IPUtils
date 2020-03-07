@@ -130,6 +130,7 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValid( $ip ) {
+		// Test IPv4 before IPv6 as it's more common.
 		return ( preg_match( '/^' . self::RE_IP_ADD . '$/', $ip )
 			|| preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip ) );
 	}
@@ -143,8 +144,9 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValidRange( $ipRange ) {
-		return ( preg_match( '/^' . self::RE_IPV6_RANGE . '$/', $ipRange )
-			|| preg_match( '/^' . self::RE_IP_RANGE . '$/', $ipRange ) );
+		// Test IPv4 before IPv6 as it's more common.
+		return ( preg_match( '/^' . self::RE_IP_RANGE . '$/', $ipRange )
+			|| preg_match( '/^' . self::RE_IPV6_RANGE . '$/', $ipRange ) );
 	}
 
 	/**
