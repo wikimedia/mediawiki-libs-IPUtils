@@ -40,7 +40,7 @@ class IPUtils {
 	 * An IPv4 range is an IP address and a prefix (d1 to d32)
 	 * @private
 	 */
-	const RE_IP_PREFIX = '(3[0-2]|[12]?\d)';
+	const RE_IP_PREFIX = '(3[0-2]|[12][0-9]|[1-9])';
 	/** @private */
 	const RE_IP_RANGE = self::RE_IP_ADD . '\/' . self::RE_IP_PREFIX;
 
@@ -51,7 +51,7 @@ class IPUtils {
 	 */
 	const RE_IPV6_WORD = '([0-9A-Fa-f]{1,4})';
 	/** @private */
-	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9]?\d)';
+	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9][0-9]|[1-9])';
 	/** @private */
 	const RE_IPV6_ADD =
 		'(?:' .
