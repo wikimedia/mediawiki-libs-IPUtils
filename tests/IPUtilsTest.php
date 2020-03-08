@@ -549,41 +549,44 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Issues there are most probably from IPUtils::toHex() or IPUtils::parseRange()
 	 * @covers \Wikimedia\IPUtils::isInRange
+	 * @covers \Wikimedia\IPUtils::isInRanges
 	 * @dataProvider provideIPsAndRanges
 	 */
-	public function testIPIsInRange( $expected, $addr, $range, $message = '' ) {
+	public function testIPIsInRanges( $expected, $addr, $ranges, $message = '' ) {
 		$this->assertEquals(
 			$expected,
-			IPUtils::isInRange( $addr, $range ),
+			IPUtils::isInRanges( $addr, $ranges ),
 			$message
 		);
 	}
 
-	/** Provider for IPUtilsTest::testIPIsInRange() */
+	/**
+	 * Provider for IPUtilsTest::testIPIsInRanges()
+	 */
 	public static function provideIPsAndRanges() {
-		// Format: (expected boolean, address, range, optional message)
+		// Format: (expected boolean, address, ranges, optional message)
 		return [
 			// IPv4
-			[ true, '192.0.2.0', '192.0.2.0/24', 'Network address' ],
-			[ true, '192.0.2.77', '192.0.2.0/24', 'Simple address' ],
-			[ true, '192.0.2.255', '192.0.2.0/24', 'Broadcast address' ],
+			[ true, '192.0.2.0', [ '192.0.2.0/24' ], 'Network address' ],
+			[ true, '192.0.2.77', [ '192.0.2.0/24' ], 'Simple address' ],
+			[ true, '192.0.2.255', [ '192.0.2.0/24' ], 'Broadcast address' ],
 
-			[ false, '0.0.0.0', '192.0.2.0/24' ],
-			[ false, '255.255.255', '192.0.2.0/24' ],
+			[ false, '0.0.0.0', [ '192.0.2.0/24' ] ],
+			[ false, '255.255.255', [ '192.0.2.0/24' ] ],
 
 			// IPv6
-			[ false, '::1', '2001:DB8::/32' ],
-			[ false, '::', '2001:DB8::/32' ],
-			[ false, 'FE80::1', '2001:DB8::/32' ],
+			[ false, '::1', [ '2001:DB8::/32' ] ],
+			[ false, '::', [ '2001:DB8::/32' ] ],
+			[ false, 'FE80::1', [ '2001:DB8::/32' ] ],
 
-			[ true, '2001:DB8::', '2001:DB8::/32' ],
-			[ true, '2001:0DB8::', '2001:DB8::/32' ],
-			[ true, '2001:DB8::1', '2001:DB8::/32' ],
-			[ true, '2001:0DB8::1', '2001:DB8::/32' ],
+			[ true, '2001:DB8::', [ '2001:DB8::/32' ] ],
+			[ true, '2001:0DB8::', [ '2001:DB8::/32' ] ],
+			[ true, '2001:DB8::1', [ '2001:DB8::/32' ] ],
+			[ true, '2001:0DB8::1', [ '2001:DB8::/32' ] ],
 			[ true, '2001:0DB8:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF',
-				'2001:DB8::/32' ],
+				[ '2001:DB8::/32' ] ],
 
-			[ false, '2001:0DB8:F::', '2001:DB8::/96' ],
+			[ false, '2001:0DB8:F::', [ '2001:DB8::/96' ] ],
 		];
 	}
 
