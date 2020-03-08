@@ -437,18 +437,21 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * @covers \Wikimedia\IPUtils::formatHex
+	 * @covers \Wikimedia\IPUtils::hexToOctet
 	 * @covers \Wikimedia\IPUtils::hexToQuad
-	 * @dataProvider provideIPsAndHexes
+	 * @dataProvider provideOctetsAndHexes
 	 */
-	public function testHexToQuad( $ip, $hex ) {
-		$this->assertEquals( $ip, IPUtils::hexToQuad( $hex ) );
+	public function testHexToOctet( $octet, $hex ) {
+		$this->assertEquals( $octet, IPUtils::formatHex( $hex ) );
 	}
 
 	/**
-	 * Provide some IP addresses and their equivalent hex representations
+	 * Provide some hex and octet representations of the same IPs
 	 */
-	public function provideIPsandHexes() {
+	public function provideOctetsAndHexes() {
 		return [
+			// IPv4
 			[ '0.0.0.1', '00000001' ],
 			[ '255.0.0.0', 'FF000000' ],
 			[ '255.255.255.255', 'FFFFFFFF' ],
@@ -458,34 +461,20 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0.0.0.1', '1' ],
 			[ '0.0.0.255', 'FF' ],
 			[ '0.0.255.0', 'FF00' ],
-		];
-	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::hexToOctet
-	 * @dataProvider provideOctetsAndHexes
-	 */
-	public function testHexToOctet( $octet, $hex ) {
-		$this->assertEquals( $octet, IPUtils::hexToOctet( $hex ) );
-	}
-
-	/**
-	 * Provide some hex and octet representations of the same IPs
-	 */
-	public function provideOctetsAndHexes() {
-		return [
-			[ '0:0:0:0:0:0:0:1', '00000000000000000000000000000001' ],
-			[ '0:0:0:0:0:0:FF:3', '00000000000000000000000000FF0003' ],
-			[ '0:0:0:0:0:0:FF00:6', '000000000000000000000000FF000006' ],
-			[ '0:0:0:0:0:0:FCCF:FAFF', '000000000000000000000000FCCFFAFF' ],
-			[ 'FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ],
+			// IPv6
+			[ '0:0:0:0:0:0:0:1', 'v6-00000000000000000000000000000001' ],
+			[ '0:0:0:0:0:0:FF:3', 'v6-00000000000000000000000000FF0003' ],
+			[ '0:0:0:0:0:0:FF00:6', 'v6-000000000000000000000000FF000006' ],
+			[ '0:0:0:0:0:0:FCCF:FAFF', 'v6-000000000000000000000000FCCFFAFF' ],
+			[ 'FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ],
 			// hex not left-padded...
-			[ '0:0:0:0:0:0:0:0', '0' ],
-			[ '0:0:0:0:0:0:0:1', '1' ],
-			[ '0:0:0:0:0:0:0:FF', 'FF' ],
-			[ '0:0:0:0:0:0:0:FFD0', 'FFD0' ],
-			[ '0:0:0:0:0:0:FA00:0', 'FA000000' ],
-			[ '0:0:0:0:0:0:FCCF:FAFF', 'FCCFFAFF' ],
+			[ '0:0:0:0:0:0:0:0', 'v6-0' ],
+			[ '0:0:0:0:0:0:0:1', 'v6-1' ],
+			[ '0:0:0:0:0:0:0:FF', 'v6-FF' ],
+			[ '0:0:0:0:0:0:0:FFD0', 'v6-FFD0' ],
+			[ '0:0:0:0:0:0:FA00:0', 'v6-FA000000' ],
+			[ '0:0:0:0:0:0:FCCF:FAFF', 'v6-FCCFFAFF' ],
 		];
 	}
 
