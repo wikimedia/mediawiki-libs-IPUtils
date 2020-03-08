@@ -318,7 +318,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::testSanitizeIP()
+	 * Provider for IPUtilsTest::testSanitizeIP()
 	 */
 	public static function provideSanitizeIP() {
 		return [
@@ -381,7 +381,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::testIsPublic()
+	 * Provider for IPUtilsTest::testIsPublic()
 	 */
 	public static function provideIsPublic() {
 		return [
@@ -547,7 +547,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	/** Provider for testIPIsInRange() */
+	/** Provider for IPUtilsTest::testIPIsInRange() */
 	public static function provideIPsAndRanges() {
 		// Format: (expected boolean, address, range, optional message)
 		return [
@@ -584,7 +584,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::splitHostAndPort()
+	 * Provider for IPUtilsTest::splitHostAndPort()
 	 */
 	public static function provideSplitHostAndPort() {
 		return [
@@ -615,7 +615,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::combineHostAndPort()
+	 * Provider for IPUtilsTest::combineHostAndPort()
 	 */
 	public static function provideCombineHostAndPort() {
 		return [
@@ -635,7 +635,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::testSanitizeRange()
+	 * Provider for IPUtilsTest::testSanitizeRange()
 	 */
 	public static function provideIPCIDRs() {
 		return [
@@ -659,7 +659,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provider for IPUtils::testPrettifyIP()
+	 * Provider for IPUtilsTest::testPrettifyIP()
 	 */
 	public static function provideIPsToPrettify() {
 		return [
