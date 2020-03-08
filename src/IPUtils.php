@@ -736,9 +736,11 @@ class IPUtils {
 		// remove zone info (T37738)
 		$addr = preg_replace( '/\%.*/', '', $addr );
 
-		if ( self::isValid( $addr ) ) {
+		// If it's already a valid IPv4 address, nothing to do
+		if ( self::isValidIPv4( $addr ) ) {
 			return $addr;
 		}
+
 		// Turn mapped addresses from ::ce:ffff:1.2.3.4 to 1.2.3.4
 		if ( strpos( $addr, ':' ) !== false && strpos( $addr, '.' ) !== false ) {
 			$addr = substr( $addr, strrpos( $addr, ':' ) + 1 );
@@ -746,15 +748,18 @@ class IPUtils {
 				return $addr;
 			}
 		}
+
 		// IPv6 loopback address
 		$m = [];
 		if ( preg_match( '/^0*' . self::RE_IPV6_GAP . '1$/', $addr, $m ) ) {
 			return '127.0.0.1';
 		}
+
 		// IPv4-mapped and IPv4-compatible IPv6 addresses
 		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . '(' . self::RE_IP_ADD . ')$/i', $addr, $m ) ) {
 			return $m[1];
 		}
+
 		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . self::RE_IPV6_WORD .
 			':' . self::RE_IPV6_WORD . '$/i', $addr, $m )
 		) {
