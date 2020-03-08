@@ -24,6 +24,7 @@
 		"jakub-onderka/php-console-highlighter": "0.4.0",
 		"mediawiki/mediawiki-codesniffer": "29.0.0",
 		"mediawiki/minus-x": "1.0.0",
+		"mediawiki/mediawiki-phan-config": "0.9.2",
 		"ockcyp/covers-validator": "1.1.1",
 		"phpunit/phpunit": "^8.5"
 	},
@@ -33,6 +34,7 @@
 			"phpunit",
 			"covers-validator",
 			"phpcs -sp",
+			"phan --allow-polyfill-parser --long-progress-bar",
 			"minus-x check ."
 		],
 		"cover": "phpunit --coverage-html coverage",
@@ -40,5 +42,8 @@
 			"minus-x fix .",
 			"phpcbf"
 		]
+	},
+	"extra": {
+		"phan-taint-check-plugin": "2.0.1"
 	}
 }

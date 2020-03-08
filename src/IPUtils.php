@@ -183,7 +183,7 @@ class IPUtils {
 	 * IPv4 addresses have leading zeros, in each octet, removed.
 	 *
 	 * @param string $ip IP address in quad or octet form (CIDR or not).
-	 * @return string
+	 * @return string|null
 	 */
 	public static function sanitizeIP( $ip ) {
 		$ip = trim( $ip );
@@ -244,11 +244,14 @@ class IPUtils {
 	 * This will make it more compact and lower-case.
 	 *
 	 * @param string $ip
-	 * @return string
+	 * @return string|null
 	 */
 	public static function prettifyIP( $ip ) {
 		// normalize (removes '::')
 		$ip = self::sanitizeIP( $ip );
+		if ( $ip === null ) {
+			return null;
+		}
 		if ( self::isIPv6( $ip ) ) {
 			// Split IP into an address and a CIDR
 			if ( strpos( $ip, '/' ) !== false ) {
@@ -264,7 +267,7 @@ class IPUtils {
 			) ) {
 				// full match
 				list( $match, $pos ) = $m[0];
-				if ( strlen( $match ) > strlen( $longest ) ) {
+				if ( strlen( (string)$match ) > strlen( (string)$longest ) ) {
 					$longest = $match;
 					$longestPos = $pos;
 				}
@@ -502,7 +505,7 @@ class IPUtils {
 		}
 		$r_ip = '';
 		foreach ( explode( ':', $ip ) as $v ) {
-			$r_ip .= str_pad( $v, 4, 0, STR_PAD_LEFT );
+			$r_ip .= str_pad( $v, 4, '0', STR_PAD_LEFT );
 		}
 
 		return $r_ip;
@@ -529,7 +532,7 @@ class IPUtils {
 			if ( $bits == 0 ) {
 				$network = 0;
 			} else {
-				$network &= ~( ( 1 << ( 32 - $bits ) ) - 1 );
+				$network &= ~( ( 1 << ( 32 - (int)$bits ) ) - 1 );
 			}
 			// Convert to unsigned
 			if ( $network < 0 ) {
@@ -622,7 +625,7 @@ class IPUtils {
 				// Convert to a padded binary number
 				$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
 				// Truncate the last (128-$bits) bits and replace them with zeros
-				$network = str_pad( substr( $network, 0, $bits ), 128, 0, STR_PAD_RIGHT );
+				$network = str_pad( substr( $network, 0, (int)$bits ), 128, '0', STR_PAD_RIGHT );
 				// Convert back to an integer
 				$network = \Wikimedia\base_convert( $network, 2, 10 );
 			}
@@ -661,7 +664,7 @@ class IPUtils {
 				// Turn network to binary (again)
 				$end = \Wikimedia\base_convert( $network, 10, 2, 128 );
 				// Truncate the last (128-$bits) bits and replace them with ones
-				$end = str_pad( substr( $end, 0, $bits ), 128, 1, STR_PAD_RIGHT );
+				$end = str_pad( substr( $end, 0, $bits ), 128, '1', STR_PAD_RIGHT );
 				// Convert to hex
 				$end = \Wikimedia\base_convert( $end, 2, 16, 32, false );
 				// see toHex() comment
