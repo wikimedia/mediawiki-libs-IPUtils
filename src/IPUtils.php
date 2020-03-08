@@ -490,7 +490,7 @@ class IPUtils {
 	 * to an integer network and a number of bits
 	 *
 	 * @param string $range IP with CIDR prefix
-	 * @return array [int or string, int]
+	 * @return array [int|string, int]
 	 */
 	public static function parseCIDR( $range ) {
 		if ( self::isIPv6( $range ) ) {
@@ -533,7 +533,8 @@ class IPUtils {
 	 *     2001:0db8:85a3::7344 - 2001:0db8:85a3::7344   Explicit range
 	 *     2001:0db8:85a3::7344                          Single IP
 	 * @param string $range IP range
-	 * @return array [ string, string ]
+	 * @return array [string, string]|array [false, false] If the start or end of the range
+	 * is invalid, then array [false, false] is returned
 	 */
 	public static function parseRange( $range ) {
 		// CIDR notation
@@ -621,7 +622,8 @@ class IPUtils {
 	 *
 	 * @param string $range
 	 *
-	 * @return array [string, string]
+	 * @return array [string, string]|array [false, false] If the start or end of the range
+	 * is invalid, then array [false, false] is returned
 	 */
 	private static function parseRange6( $range ) {
 		// Expand any IPv6 IP
