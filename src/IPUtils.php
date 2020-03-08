@@ -773,9 +773,9 @@ class IPUtils {
 		if ( self::isIPv6( $ip ) ) {
 			$parts = self::parseRange( "$ip/64" );
 			$subnet = $parts[0];
-		} elseif ( preg_match( '/^(\d+\.\d+\.\d+)\.\d+$/', $ip, $matches ) ) {
+		} elseif ( preg_match( self::RE_IP_ADD, $ip, $matches ) ) {
 			// IPv4
-			$subnet = $matches[1];
+			$subnet = "{$matches[1]}.{$matches[2]}.{$matches[3]}";
 		}
 		return $subnet;
 	}
