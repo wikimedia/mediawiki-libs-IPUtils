@@ -737,4 +737,21 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0:0:0:0:0:0:0:0-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
 		];
 	}
+
+	/**
+	 * @covers \Wikimedia\IPUtils::getSubnet()
+	 * @dataProvider provideSubnetsToGet
+	 */
+	public function testGetSubnet( $ip, $subnet ) {
+		$this->assertEquals( $subnet, IPUtils::getSubnet( $ip ), "Subnet extraction" );
+	}
+
+	/**
+	 * Provider for IPUtilsTest::testGetSubnet()
+	 */
+	public function provideSubnetsToGet() {
+		return [
+			[ '127.0.0.1', '127.0.0' ],
+		];
+	}
 }
