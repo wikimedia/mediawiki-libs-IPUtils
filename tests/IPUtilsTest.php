@@ -157,6 +157,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * @covers \Wikimedia\IPUtils::isValid
+	 * @covers \Wikimedia\IPUtils::isValidIPv4
+	 * @covers \Wikimedia\IPUtils::isValidIPv6
 	 */
 	public function testValidIPs() {
 		foreach ( range( 0, 255 ) as $i ) {

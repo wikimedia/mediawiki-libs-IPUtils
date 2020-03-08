@@ -137,8 +137,29 @@ class IPUtils {
 	 */
 	public static function isValid( $ip ) {
 		// Test IPv4 before IPv6 as it's more common.
-		return ( preg_match( '/^' . self::RE_IP_ADD . '$/', $ip )
-			|| preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip ) );
+		return ( self::isValidIPv4( $ip ) || self::isValidIPv6( $ip ) );
+	}
+
+	/**
+	 * Validate an IPv4 address. Ranges are NOT considered valid.
+	 *
+	 * @param string $ip
+	 * @return bool True if it is valid
+	 */
+	public static function isValidIPv4( $ip ) {
+		return preg_match( '/^' . self::RE_IP_ADD . '$/', $ip );
+	}
+
+	/**
+	 * Validate an IPv6 address. Ranges are NOT considered valid.
+	 * SIIT IPv4-translated addresses are rejected.
+	 * @note canonicalize() tries to convert translated addresses to IPv4.
+	 *
+	 * @param string $ip
+	 * @return bool True if it is valid
+	 */
+	public static function isValidIPv6( $ip ) {
+		return preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip );
 	}
 
 	/**
