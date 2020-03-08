@@ -345,6 +345,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ 'Foo.1000.00', 'Foo.1000.00' ],
 			[ 'Bar.01', 'Bar.01' ],
 			[ 'Bar.010', 'Bar.010' ],
+			[ '0:0:0:0:0:10:F:2001', '::10:f:2001' ],
+			[ '0:0:0:0:0:10:F:2001/70', '::10:f:2001/70' ],
 			[ null, '' ],
 			[ null, ' ' ]
 		];
