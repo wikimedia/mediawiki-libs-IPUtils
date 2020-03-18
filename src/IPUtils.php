@@ -23,6 +23,8 @@
 
 namespace Wikimedia;
 
+use InvalidArgumentException;
+
 /**
  * A collection of public static functions to play with IP address
  * and IP ranges.
@@ -94,6 +96,11 @@ class IPUtils {
 		')';
 
 	/**
+	 * Maximum number of IP addresses that can be retrieved from a given range.
+	 */
+	private const MAXIMUM_IPS_FROM_RANGE = 2 ** 16;
+
+	/**
 	 * Determine if a string is as valid IP address or network (CIDR prefix).
 	 * SIIT IPv4-translated addresses are rejected.
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
@@ -163,7 +170,27 @@ class IPUtils {
 	}
 
 	/**
-	 * Validate an IP range (valid address with a valid CIDR prefix or explicit range).
+	 * Validate an IPv4 range (valid IPv4 address with a valid CIDR prefix or explicit range).
+	 *
+	 * @param string $ipRange
+	 * @return bool True if input is valid
+	 */
+	private static function isValidIPv4Range( $ipRange ) {
+		return (bool)preg_match( '/^' . self::RE_IP_RANGE . '$/', $ipRange );
+	}
+
+	/**
+	 * Validate an IPv6 range (valid IPv6 address with a valid CIDR prefix or explicit range).
+	 *
+	 * @param string $ipRange
+	 * @return bool True if input is valid
+	 */
+	private static function isValidIPv6Range( $ipRange ) {
+		return (bool)preg_match( '/^' . self::RE_IPV6_RANGE . '$/', $ipRange );
+	}
+
+	/**
+	 * Validate an IP range (valid in either IPv4 OR IPv6; given with valid CIDR prefix or in explicit notation).
 	 * SIIT IPv4-translated addresses are rejected.
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
@@ -172,8 +199,7 @@ class IPUtils {
 	 */
 	public static function isValidRange( $ipRange ) {
 		// Test IPv4 before IPv6 as it's more common.
-		return ( preg_match( '/^' . self::RE_IP_RANGE . '$/', $ipRange )
-			|| preg_match( '/^' . self::RE_IPV6_RANGE . '$/', $ipRange ) );
+		return ( self::isValidIPv4Range( $ipRange ) || self::isValidIPv6Range( $ipRange ) );
 	}
 
 	/**
@@ -807,5 +833,37 @@ class IPUtils {
 			$subnet = "{$matches[1]}.{$matches[2]}.{$matches[3]}";
 		}
 		return $subnet;
+	}
+
+	/**
+	 * Return all the addresses in a given range
+	 *
+	 * This currently does not support IPv6 ranges and is limited to /16 block (65535 addresses).
+	 *
+	 * @param string $range IP ranges to get the IPs within
+	 * @return string[] Array of addresses in the range
+	 * @throws InvalidArgumentException If input uses IPv6
+	 * @throws InvalidArgumentException If input range is too large
+	 */
+	public static function getIPsInRange( $range ) : array {
+		// No IPv6 for now.
+		if ( self::isValidIPv6( $range ) || self::isValidIPv6Range( $range ) ) {
+			throw new InvalidArgumentException( 'Cannot retrieve addresses for IPv6 range: ' . $range );
+		}
+
+		list( $start, $end ) = self::parseRange( $range );
+		if ( $start === false || $start === $end ) {
+			throw new InvalidArgumentException( 'Invalid range given: ' . $range );
+		}
+
+		if ( ( hexdec( $end ) - hexdec( $start ) ) > self::MAXIMUM_IPS_FROM_RANGE ) {
+			throw new InvalidArgumentException( "Range {$range} is too large, it contains more than "
+				. self::MAXIMUM_IPS_FROM_RANGE . ' addresses' );
+		}
+
+		$start = ip2long( self::formatHex( $start ) );
+		$end = ip2long( self::formatHex( $end ) );
+
+		return array_map( 'long2ip', range( $start, $end ) );
 	}
 }

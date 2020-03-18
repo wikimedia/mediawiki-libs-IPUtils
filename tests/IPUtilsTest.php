@@ -757,4 +757,79 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '127.0.0.1', '127.0.0' ],
 		];
 	}
+
+	/**
+	 * @covers \Wikimedia\IPUtils::getIPsInRange()
+	 * @dataProvider provideIPsInRangeToGet
+	 */
+	public function testGetIPsInRange( $range, $expected ) {
+		$this->assertEquals( $expected, IPUtils::getIPsInRange( $range ), "IPs from a range" );
+	}
+
+	/**
+	 * @covers \Wikimedia\IPUtils::getIPsInRange()
+	 * @dataProvider provideIPsInRangeToGet
+	 */
+	 public static function provideIPsInRangeToGet() {
+		return [
+			[ '212.35.31.121/28', [ '212.35.31.112', '212.35.31.113', '212.35.31.114', '212.35.31.115', '212.35.31.116',
+			  '212.35.31.117', '212.35.31.118', '212.35.31.119', '212.35.31.120', '212.35.31.121', '212.35.31.122','212.35.31.123',
+			  '212.35.31.124', '212.35.31.125', '212.35.31.126', '212.35.31.127' ]
+			],
+			[ '212.35.31.121/26', [ '212.35.31.64', '212.35.31.65', '212.35.31.66', '212.35.31.67', '212.35.31.68', '212.35.31.69',
+			  '212.35.31.70', '212.35.31.71', '212.35.31.72', '212.35.31.73', '212.35.31.74', '212.35.31.75', '212.35.31.76',
+			  '212.35.31.77', '212.35.31.78', '212.35.31.79', '212.35.31.80', '212.35.31.81', '212.35.31.82', '212.35.31.83',
+			  '212.35.31.84', '212.35.31.85', '212.35.31.86', '212.35.31.87', '212.35.31.88', '212.35.31.89', '212.35.31.90',
+			  '212.35.31.91', '212.35.31.92', '212.35.31.93', '212.35.31.94', '212.35.31.95', '212.35.31.96', '212.35.31.97',
+			  '212.35.31.98', '212.35.31.99', '212.35.31.100', '212.35.31.101', '212.35.31.102', '212.35.31.103', '212.35.31.104',
+			  '212.35.31.105', '212.35.31.106', '212.35.31.107', '212.35.31.108', '212.35.31.109', '212.35.31.110', '212.35.31.111',
+			  '212.35.31.112', '212.35.31.113', '212.35.31.114', '212.35.31.115', '212.35.31.116', '212.35.31.117', '212.35.31.118',
+			  '212.35.31.119', '212.35.31.120', '212.35.31.121', '212.35.31.122', '212.35.31.123', '212.35.31.124', '212.35.31.125',
+			  '212.35.31.126', '212.35.31.127' ],
+			],
+			[ '212.35.31.112-212.35.31.127', [ '212.35.31.112', '212.35.31.113', '212.35.31.114', '212.35.31.115', '212.35.31.116',
+			  '212.35.31.117', '212.35.31.118', '212.35.31.119', '212.35.31.120', '212.35.31.121', '212.35.31.122','212.35.31.123',
+			  '212.35.31.124', '212.35.31.125', '212.35.31.126', '212.35.31.127' ]
+			],
+		];
+	 }
+
+	/**
+	 * @covers \Wikimedia\IPUtils::getIPsInRange()
+	 * @dataProvider provideIPsInForbiddenRangeToNotGet
+	 */
+	public function testGetForbiddenIPsInRange( $range, $expected ) {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( $expected );
+		IPUtils::getIPsInRange( $range );
+	}
+
+	/**
+	 * Provider for IPUtilsTest::testGetForbiddenIPsInRange
+	 */
+	public static function provideIPsInForbiddenRangeToNotGet() {
+		$string = 'is too large, it contains more than 65536 addresses';
+		return [
+			// By definition, a 'range' must contains more than one value
+			[ '212.35.31.121/32', 'Invalid range given: ' . '212.35.31.121/32' ],
+			[ '16.20.184.255-16.20.184.255', 'Invalid range given: ' . '16.20.184.255-16.20.184.255' ],
+
+			// Other impossible/invalid ranges
+			[ '212.35.31.121/33', 'Invalid range given: ' . '212.35.31.121/33' ],
+			[ '212.35.31.121/999', 'Invalid range given: ' . '212.35.31.121/999' ],
+			[ '16.17.184.0-16.27.184', 'Invalid range given: ' . '16.17.184.0-16.27.184' ],
+
+			// IPv6 ranges
+			[ '2001:5c0:1400:a::df:2', 'Cannot retrieve addresses for IPv6 range: ' . '2001:5c0:1400:a::df:2' ],
+			[ 'fc::100:a:d:1:e:ac/96', 'Cannot retrieve addresses for IPv6 range: ' . 'fc::100:a:d:1:e:ac/96' ],
+			[ '2607:fea8:bfa0:0bd0:0000:0000:0000:0000-2607:fea8:bfa0:0bd0:0000:0000:0000:0000', 'Cannot retrieve '
+			. 'addresses for IPv6 range: 2607:fea8:bfa0:0bd0:0000:0000:0000:0000-2607:fea8:bfa0:0bd0:0000:0000:0000:0000' ],
+
+			// Forbidden ranges
+			[ '212.35.31.121/1', 'Range 212.35.31.121/1 ' . $string ],
+			[ '212.35.31.121/15', 'Range 212.35.31.121/15 ' . $string ],
+			[ '16.17.184.0-16.20.184.255', 'Range 16.17.184.0-16.20.184.255 ' . $string ],
+			[ '16.02.000.0-16.20.184.255', 'Range 16.02.000.0-16.20.184.255 ' . $string ],
+		];
+	}
 }
