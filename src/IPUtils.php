@@ -755,11 +755,11 @@ class IPUtils {
 	 * Convert some unusual representations of IPv4 addresses to their
 	 * canonical dotted quad representation.
 	 *
-	 * This currently only checks a few IPV4-to-IPv6 related cases.  More
+	 * This currently only checks a few IPV4-to-IPv6 related cases. More
 	 * unusual representations may be added later.
 	 *
 	 * @param string $addr Something that might be an IP address
-	 * @return string|null Valid dotted quad IPv4 address or null
+	 * @return string|null Valid IP address or null
 	 */
 	public static function canonicalize( $addr ) {
 		// remove zone info (T37738)
@@ -778,12 +778,6 @@ class IPUtils {
 			}
 		}
 
-		// IPv6 loopback address
-		$m = [];
-		if ( preg_match( '/^0*' . self::RE_IPV6_GAP . '1$/', $addr, $m ) ) {
-			return '127.0.0.1';
-		}
-
 		// IPv4-mapped and IPv4-compatible IPv6 addresses
 		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . '(' . self::RE_IP_ADD . ')$/i', $addr, $m ) ) {
 			return $m[1];
@@ -795,6 +789,12 @@ class IPUtils {
 			return long2ip( ( hexdec( $m[1] ) << 16 ) + hexdec( $m[2] ) );
 		}
 
+		// It's a valid IPv6 address that we haven't canonicalized, so return it
+		if ( self::isValidIPv6( $addr ) ) {
+			return $addr;
+		}
+
+		// Not a valid IP address
 		return null;
 	}
 

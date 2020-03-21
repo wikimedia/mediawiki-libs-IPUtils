@@ -532,12 +532,6 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			IPUtils::canonicalize( '192.0.2.152' ),
 			'Canonicalization of a valid IP returns it unchanged'
 		);
-
-		$this->assertEquals(
-			'127.0.0.1',
-			IPUtils::canonicalize( '::1' ),
-			'Canonicalization of IPv6 loopback address'
-		);
 	}
 
 	/**
