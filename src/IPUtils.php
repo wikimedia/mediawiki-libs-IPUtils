@@ -147,7 +147,7 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValidIPv4( $ip ) {
-		return preg_match( '/^' . self::RE_IP_ADD . '$/', $ip );
+		return (bool)preg_match( '/^' . self::RE_IP_ADD . '$/', $ip );
 	}
 
 	/**
@@ -159,7 +159,7 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValidIPv6( $ip ) {
-		return preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip );
+		return (bool)preg_match( '/^' . self::RE_IPV6_ADD . '$/', $ip );
 	}
 
 	/**
