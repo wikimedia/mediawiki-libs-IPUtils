@@ -287,6 +287,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * @covers \Wikimedia\IPUtils::isValidRange
+	 * @covers \Wikimedia\IPUtils::isValidIPv4Range
+	 * @covers \Wikimedia\IPUtils::isValidIPv6Range
 	 * @dataProvider provideValidRanges
 	 */
 	public function testValidRanges( $range ) {
