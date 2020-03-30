@@ -351,8 +351,10 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ 'Bar.010', 'Bar.010' ],
 			[ '0:0:0:0:0:10:F:2001', '::10:f:2001' ],
 			[ '0:0:0:0:0:10:F:2001/70', '::10:f:2001/70' ],
+			[ '2001:DB8:85A3:0:0:8A2E:370:7334', '2001:db8:85a3::8a2e:370:7334' ],
+			[ '2001:DB8:85A3:8A2E:370:7334:0:0', '2001:db8:85a3:8a2e:370:7334::' ],
 			[ null, '' ],
-			[ null, ' ' ]
+			[ null, ' ' ],
 		];
 	}
 
@@ -383,7 +385,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ 'v6-20010DB885A3000000008A2E03707334', '2001:0db8:85a3:0000:0000:8a2e:0370:7334' ],
 			[ 'v6-20010DB885A3000000008A2E03707334', '2001:db8:85a3::8a2e:0370:7334' ],
 			[ false, 'IN:VA::LI:D' ],
-			[ false, ':::1' ]
+			[ false, ':::1' ],
 		];
 	}
 
@@ -697,6 +699,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0:0:fef:0:0:0:e:fbb/96', '0:0:fef::e:fbb/96' ],
 			[ 'abbc:2004:0:0::0:0/40', 'abbc:2004::/40' ],
 			[ 'aebc:2004:f:0:0:0:0:0/80', 'aebc:2004:f::/80' ],
+			[ '', null ],
 		];
 	}
 
