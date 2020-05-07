@@ -743,6 +743,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			// We don't support /0 ranges
 			// [ '::fe:f:2001/0', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
 			[ '0:0:0:0:0:0:0:0-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
+			// Invalid input
+			[ false, [ false, false ] ],
 		];
 	}
 
@@ -760,6 +762,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	public function provideSubnetsToGet() {
 		return [
 			[ '127.0.0.1', '127.0.0' ],
+			[ '::6d:f:2001', 'v6-00000000000000000000000000000000' ],
 		];
 	}
 
