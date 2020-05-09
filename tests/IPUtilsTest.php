@@ -360,6 +360,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * @covers \Wikimedia\IPUtils::toHex
+	 * @covers \Wikimedia\IPUtils::IPv6ToRawHex
 	 * @dataProvider provideToHex
 	 */
 	public function testToHex( $expected, $input ) {
