@@ -306,15 +306,8 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider provideBadMaskSets
 	 */
 	public function testAddCidrWarning( $cidr ) {
-		if ( class_exists( \PHPUnit_Framework_Error_Warning::class ) ) {
-			// PHPUnit 4.8
-			$this->setExpectedExceptionRegExp( \PHPUnit_Framework_Error_Warning::class,
-				'/IPSet: Bad mask.*/' );
-		} else {
-			// PHPUnit 6+
-			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
-			$this->expectExceptionMessageRegExp( '/IPSet: Bad mask.*/' );
-		}
+		$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+		$this->expectExceptionMessageRegExp( '/IPSet: Bad mask.*/' );
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
 		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
