@@ -144,7 +144,7 @@ class IPUtils {
 	 */
 	public static function isValid( $ip ) {
 		// Test IPv4 before IPv6 as it's more common.
-		return ( self::isValidIPv4( $ip ) || self::isValidIPv6( $ip ) );
+		return self::isValidIPv4( $ip ) || self::isValidIPv6( $ip );
 	}
 
 	/**
@@ -199,7 +199,7 @@ class IPUtils {
 	 */
 	public static function isValidRange( $ipRange ) {
 		// Test IPv4 before IPv6 as it's more common.
-		return ( self::isValidIPv4Range( $ipRange ) || self::isValidIPv6Range( $ipRange ) );
+		return self::isValidIPv4Range( $ipRange ) || self::isValidIPv6Range( $ipRange );
 	}
 
 	/**
@@ -240,11 +240,11 @@ class IPUtils {
 			if ( $abbrevPos == 0 ) {
 				$repeat = '0:';
 				// for the address '::'
-				$extra = ( $ip == '::' ) ? '0' : '';
+				$extra = $ip == '::' ? '0' : '';
 				// 7+2 (due to '::')
 				$pad = 9;
 			// If the '::' is at the end...
-			} elseif ( $abbrevPos == ( $addressEnd - 1 ) ) {
+			} elseif ( $abbrevPos == $addressEnd - 1 ) {
 				$repeat = ':0';
 				$extra = '';
 				// 7+2 (due to '::')
@@ -298,7 +298,7 @@ class IPUtils {
 					$longestPos = $pos;
 				}
 				// advance
-				$offset = ( $pos + strlen( $match ) );
+				$offset = $pos + strlen( $match );
 			}
 			if ( $longest !== false ) {
 				// Replace this portion of the string with the '::' abbreviation
@@ -730,8 +730,8 @@ class IPUtils {
 		$hexIP = self::toHex( $addr );
 		list( $start, $end ) = self::parseRange( $range );
 
-		return ( strcmp( $hexIP, $start ) >= 0 &&
-			strcmp( $hexIP, $end ) <= 0 );
+		return strcmp( $hexIP, $start ) >= 0 &&
+			strcmp( $hexIP, $end ) <= 0;
 	}
 
 	/**
@@ -856,7 +856,7 @@ class IPUtils {
 			throw new InvalidArgumentException( 'Invalid range given: ' . $range );
 		}
 
-		if ( ( hexdec( $end ) - hexdec( $start ) ) > self::MAXIMUM_IPS_FROM_RANGE ) {
+		if ( hexdec( $end ) - hexdec( $start ) > self::MAXIMUM_IPS_FROM_RANGE ) {
 			throw new InvalidArgumentException( "Range {$range} is too large, it contains more than "
 				. self::MAXIMUM_IPS_FROM_RANGE . ' addresses' );
 		}
