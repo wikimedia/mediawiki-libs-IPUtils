@@ -500,12 +500,15 @@ class IPUtils {
 			$ip = self::sanitizeIP( $ip );
 			$n = ip2long( $ip );
 			if ( $n < 0 ) {
+				// We don't run code coverage on a 32-bit OS or Windows, so this will never be exercised
+				// @codeCoverageIgnoreStart
 				$n += 2 ** 32;
 				// On 32-bit platforms (and on Windows), 2^32 does not fit into an int,
 				// so $n becomes a float. We convert it to string instead.
 				if ( is_float( $n ) ) {
 					$n = (string)$n;
 				}
+				// @codeCoverageIgnoreEnd
 			}
 			if ( $n !== false ) {
 				// Floating points can handle the conversion; faster than \Wikimedia\base_convert()
