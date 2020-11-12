@@ -526,25 +526,63 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * @covers \Wikimedia\IPUtils::canonicalize
 	 */
-	public function testIPCanonicalizeOnValidIp() {
+	public function testCanonicalize() {
 		$this->assertEquals(
 			'192.0.2.152',
 			IPUtils::canonicalize( '192.0.2.152' ),
-			'Canonicalization of a valid IP returns it unchanged'
+			'Canonicalization of a valid IPv4 address returns it unchanged'
+		);
+
+		// Example IP from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+		$this->assertEquals(
+			'192.0.2.128',
+			IPUtils::canonicalize( '::FFFF:192.0.2.128' ),
+			'Canonicalization of IPv4-mapped addresses'
+		);
+
+		// Example IP from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+		$this->assertEquals(
+			'192.0.2.128',
+			IPUtils::canonicalize( '::192.0.2.128' ),
+			'Canonicalization of IPv4-compatible IPv6 addresses'
+		);
+
+		$this->assertEquals(
+			'255.255.0.31',
+			IPUtils::canonicalize( ':ffff:1F' )
+		);
+
+		$this->assertEquals(
+			'2001:db8:85a3::8a2e:370:7334',
+			IPUtils::canonicalize( '2001:db8:85a3::8a2e:370:7334' ),
+			'Canonicalization of a valid IPv6 address returns it unchanged'
+		);
+
+		// Valid IPv6 address comes out again.
+		// Confirm that ::1 isn't canonicalized into 127.0.0.1 as was done previously
+		// https://phabricator.wikimedia.org/T248237
+		$this->assertEquals(
+			'::1',
+			IPUtils::canonicalize( '::1' ),
+			'IPv6 loopback address not converted to an IPv4 loopback address as occured in previous versions'
+		);
+
+		$this->assertNull(
+			IPUtils::canonicalize( '' ),
+			'Canonicalization of an invalid IP returns null'
 		);
 	}
 
 	/**
 	 * @covers \Wikimedia\IPUtils::canonicalize
 	 */
-	public function testIPCanonicalizeMappedAddress() {
-		$this->assertEquals(
-			'192.0.2.152',
-			IPUtils::canonicalize( '::ffff:192.0.2.152' )
-		);
-		$this->assertEquals(
-			'192.0.2.152',
-			IPUtils::canonicalize( '::192.0.2.152' )
+	public function testIncorrectCanonicalize() {
+		$this->markTestSkipped( 'Broken' );
+
+		// This shouldn't be canonicalized as it is not a valid IP address, but is currently
+		$this->assertNull(
+			IPUtils::canonicalize( '::::!*@#&:127.0.0.1' ),
+			'Invalid IPv4 mapped address that is incorrectly canonicalized'
 		);
 	}
 

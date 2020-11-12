@@ -773,7 +773,11 @@ class IPUtils {
 			return $addr;
 		}
 
-		// Turn mapped addresses from ::ce:ffff:1.2.3.4 to 1.2.3.4
+		// https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+		// Turn mapped addresses from:
+		//  ::ce:ffff:1.2.3.4 to 1.2.3.4 (IPv4-mapped IPv6 addresses)
+		//  ::1.2.3.4 to 1.2.3.4 (IPv4-compatible IPv6 address)
+		// IPv4-compatible IPv6 addresses are now deprecated https://tools.ietf.org/html/rfc4291#section-2.5.5.1
 		if ( strpos( $addr, ':' ) !== false && strpos( $addr, '.' ) !== false ) {
 			$addr = substr( $addr, strrpos( $addr, ':' ) + 1 );
 			if ( self::isIPv4( $addr ) ) {
@@ -786,6 +790,8 @@ class IPUtils {
 			return $m[1];
 		}
 
+		// Converts :ffff:1F to 255.255.0.31
+		// Is this actually used/needed?
 		if ( preg_match( '/^' . self::RE_IPV6_V4_PREFIX . self::RE_IPV6_WORD .
 			':' . self::RE_IPV6_WORD . '$/i', $addr, $m )
 		) {
