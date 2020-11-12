@@ -572,21 +572,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		);
 
 		$this->assertNull(
+			IPUtils::canonicalize( '::::!*@#&:127.0.0.1' ),
+			'Invalid IPv4 mapped address that was previously incorrectly canonicalized'
+		);
+
+		$this->assertNull(
 			IPUtils::canonicalize( '' ),
 			'Canonicalization of an invalid IP returns null'
-		);
-	}
-
-	/**
-	 * @covers \Wikimedia\IPUtils::canonicalize
-	 */
-	public function testIncorrectCanonicalize() {
-		$this->markTestSkipped( 'Broken' );
-
-		// This shouldn't be canonicalized as it is not a valid IP address, but is currently
-		$this->assertNull(
-			IPUtils::canonicalize( '::::!*@#&:127.0.0.1' ),
-			'Invalid IPv4 mapped address that is incorrectly canonicalized'
 		);
 	}
 
