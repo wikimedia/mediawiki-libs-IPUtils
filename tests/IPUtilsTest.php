@@ -784,6 +784,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0:0:0:0:0:0:0:0-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', [ 'v6-00000000000000000000000000000000', 'v6-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' ] ],
 			// Invalid input
 			[ '10.0.0.0/99', [ false, false ] ],
+			[ '::10:f:2001/', [ false, false ] ],
 			[ false, [ false, false ] ],
 		];
 	}
