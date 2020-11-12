@@ -686,12 +686,14 @@ class IPUtils {
 	private static function parseRange6( $range ) {
 		// Expand any IPv6 IP
 		$range = self::sanitizeIP( $range );
+
+		$start = false;
+		$end = false;
+
 		// CIDR notation...
 		if ( strpos( $range, '/' ) !== false ) {
 			list( $network, $bits ) = self::parseCIDR6( $range );
-			if ( $network === false ) {
-				$start = $end = false;
-			} else {
+			if ( $network !== false ) {
 				$start = \Wikimedia\base_convert( $network, 10, 16, 32, false );
 				// Turn network to binary (again)
 				$end = \Wikimedia\base_convert( $network, 10, 2, 128 );
@@ -711,10 +713,8 @@ class IPUtils {
 			if ( $start > $end ) {
 				$start = $end = false;
 			}
-		} else {
-			// Single IP
-			$start = $end = self::toHex( $range );
 		}
+
 		if ( $start === false || $end === false ) {
 			return [ false, false ];
 		} else {
