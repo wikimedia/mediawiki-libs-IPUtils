@@ -272,6 +272,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0.0.0.0-127.255.255.255' ],
 			[ '10.232.52.13/8' ],
 			[ '10.0.0.0-10.255.255.255' ],
+			[ '30.242.52.14/0' ],
 			[ '::e:f:2001/96' ],
 			[ '0:0:0:0:0:e:0:0-0:0:0:0:0:e:ffff:ffff' ],
 			[ '::c:f:2001/128' ],
@@ -282,6 +283,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '0:0:0:0:0:0:0:0-7fff:ffff:ffff:ffff:ffff:ffff:ffff:ffff' ],
 			[ '::6d:f:2001/8' ],
 			[ '0:0:0:0:0:0:0:0-ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff' ],
+			[ '::fe:f:2001/0' ],
 		];
 	}
 
@@ -311,14 +313,12 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '10.232.52.13/*' ],
 			[ '7.232.52.13/ab' ],
 			[ '11.232.52.13/' ],
-			[ '30.242.52.14/0' ],
 			[ '::e:f:2001/129' ],
 			[ '::c:f:2001/228' ],
 			[ '::10:f:2001/-1' ],
 			[ '::6d:f:2001/*' ],
 			[ '::86:f:2001/ab' ],
 			[ '::23:f:2001/' ],
-			[ '::fe:f:2001/0' ],
 		];
 	}
 

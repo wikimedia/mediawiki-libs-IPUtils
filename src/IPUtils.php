@@ -39,10 +39,10 @@ class IPUtils {
 	/** @private */
 	const RE_IP_ADD = self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE;
 	/**
-	 * An IPv4 range is an IP address and a prefix (d1 to d32)
+	 * An IPv4 range is an IP address and a prefix (d0 to d32)
 	 * @private
 	 */
-	const RE_IP_PREFIX = '(3[0-2]|[12][0-9]|[1-9])';
+	const RE_IP_PREFIX = '(3[0-2]|[12][0-9]|[0-9])';
 	/** @private */
 	const RE_IP_RANGE = '(' . self::RE_IP_ADD . '\/' . self::RE_IP_PREFIX . '|' . self::RE_IP_ADD . '\-' . self::RE_IP_ADD . ')';
 
@@ -52,8 +52,11 @@ class IPUtils {
 	 * @private
 	 */
 	const RE_IPV6_WORD = '([0-9A-Fa-f]{1,4})';
-	/** @private */
-	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9][0-9]|[1-9])';
+	/**
+	 * An IPv6 range is an IP address and a prefix (d0 to d128)
+	 * @private
+	 */
+	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9][0-9]|[0-9])';
 	/** @private */
 	const RE_IPV6_ADD =
 		'(?:' .
