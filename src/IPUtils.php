@@ -591,8 +591,8 @@ class IPUtils {
 	 *     2001:0db8:85a3::7344 - 2001:0db8:85a3::7344   Explicit range
 	 *     2001:0db8:85a3::7344                          Single IP
 	 * @param string $range IP range
-	 * @return array [string, string]|array [false, false] If the start or end of the range
-	 * is invalid, then array [false, false] is returned
+	 * @return array{string,string}|array{false,false} If the start or end of the range
+	 * is invalid, then array `[false, false]` is returned
 	 */
 	public static function parseRange( $range ) {
 		// CIDR notation
@@ -639,7 +639,7 @@ class IPUtils {
 	 *
 	 * @param string $range
 	 *
-	 * @return array [string, int]
+	 * @return array{string,int}|array{false,false}
 	 */
 	private static function parseCIDR6( $range ) {
 		// Explode into <expanded IP,range>
