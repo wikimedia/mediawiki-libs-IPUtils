@@ -1,6 +1,6 @@
 # Release History
 
-## UNRELEASED
+## v3.0.1
 * Revert "Stop allowing invalid /0 subnet" (Reedy)
 * Update return type for IPUtils::parseCIDR6 (Reedy)
 * Allow spaces around hyphenated IP ranges (Reedy)
