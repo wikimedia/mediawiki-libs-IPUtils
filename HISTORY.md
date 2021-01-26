@@ -3,6 +3,7 @@
 ## UNRELEASED
 * Revert "Stop allowing invalid /0 subnet" (Reedy)
 * Update return type for IPUtils::parseCIDR6 (Reedy)
+* Allow spaces around hyphenated IP ranges (Reedy)
 
 —
 * tests: Add @codeCoverageIgnore for 32-bit and Windows only code (Reedy)

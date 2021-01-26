@@ -266,6 +266,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '116.17.184.5-116.17.184.5' ],
 			[ '0.17.184.5/30' ],
 			[ '0.17.184.4-0.17.184.7' ],
+			// Test allowing spaces around -
+			[ '0.17.184.4 - 0.17.184.7' ],
 			[ '16.17.184.1/24' ],
 			[ '16.17.184.0-16.17.184.255' ],
 			[ '30.242.52.14/1' ],
@@ -275,6 +277,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '30.242.52.14/0' ],
 			[ '::e:f:2001/96' ],
 			[ '0:0:0:0:0:e:0:0-0:0:0:0:0:e:ffff:ffff' ],
+			// Test allowing spaces around -
+			[ '0:0:0:0:0:e:0:0 - 0:0:0:0:0:e:ffff:ffff' ],
 			[ '::c:f:2001/128' ],
 			[ '0:0:0:0:0:c:f:2001-0:0:0:0:0:c:f:2001' ],
 			[ '::10:f:2001/70' ],
