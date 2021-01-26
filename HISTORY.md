@@ -1,7 +1,15 @@
 # Release History
 
 ## UNRELEASED
+* Revert "Stop allowing invalid /0 subnet" (Reedy)
+* Update return type for IPUtils::parseCIDR6 (Reedy)
 * tests: Add @codeCoverageIgnore for 32-bit and Windows only code (Reedy)
+* tests: Exercise IPUtils::parseCIDR6() where count( $parts ) != 2 (Reedy)
+* tests: Increase test coverage of IPUtils::canonicalize() (Reedy)
+* HISTORY: Add entries for changes since v3.0.0 (James D. Forrester)
+* build: Updating mediawiki/mediawiki-codesniffer to 34.0.0 (libraryupgrader)
+* build: Updating mediawiki/mediawiki-phan-config to 0.10.6 (libraryupgrader)
+* build: Updating ockcyp/covers-validator to 1.3.1 (libraryupgrader)
 
 ## v3.0.0
 * Add method to retrieve all IPs in a given range (Ammar Abdulhamid)
