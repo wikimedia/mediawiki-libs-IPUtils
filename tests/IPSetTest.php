@@ -310,8 +310,8 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 		$this->expectWarningMessageMatches( '/IPSet: Bad mask.*/' );
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
-		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
-		$ipset = @new IPSet( array( $cidr ) );
+		// phpcs:ignore Generic.PHP.NoSilencedErrors
+		$ipset = @new IPSet( [ $cidr ] );
 		// 2. Catches error as exception
 		$ipset = new IPSet( [ $cidr ] );
 	}
@@ -343,7 +343,7 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 	 */
 	public function testMatchFailure( $ip, $expected ) {
 		$ipset = new IPSet( [] );
-		// @codingStandardsIgnoreLine Generic.PHP.NoSilencedErrors
+		// phpcs:ignore Generic.PHP.NoSilencedErrors
 		$this->assertEquals( $expected, @$ipset->match( $ip ) );
 		$this->assertFalse( $ipset->match( $ip ) );
 	}
