@@ -849,7 +849,7 @@ class IPUtils {
 	 * @throws InvalidArgumentException If input uses IPv6
 	 * @throws InvalidArgumentException If input range is too large
 	 */
-	public static function getIPsInRange( $range ) : array {
+	public static function getIPsInRange( $range ): array {
 		// No IPv6 for now.
 		if ( self::isValidIPv6( $range ) || self::isValidIPv6Range( $range ) ) {
 			throw new InvalidArgumentException( 'Cannot retrieve addresses for IPv6 range: ' . $range );
