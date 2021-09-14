@@ -33,32 +33,30 @@ class IPUtils {
 
 	/**
 	 * An IPv4 address is made of 4 bytes from x00 to xFF which is d0 to d255
-	 * @public
 	 */
-	const RE_IP_BYTE = '(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])';
-	/** @private */
-	const RE_IP_ADD = self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE;
+	public const RE_IP_BYTE = '(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])';
+
+	private const RE_IP_ADD = self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE . '\.'
+		. self::RE_IP_BYTE . '\.' . self::RE_IP_BYTE;
 	/**
 	 * An IPv4 range is an IP address and a prefix (d0 to d32)
-	 * @private
 	 */
-	const RE_IP_PREFIX = '(3[0-2]|[12][0-9]|[0-9])';
-	/** @private */
-	const RE_IP_RANGE = '(' . self::RE_IP_ADD . '\/' . self::RE_IP_PREFIX . '|' . self::RE_IP_ADD . ' ?\- ?' . self::RE_IP_ADD . ')';
+	private const RE_IP_PREFIX = '(3[0-2]|[12][0-9]|[0-9])';
+
+	private const RE_IP_RANGE = '(' . self::RE_IP_ADD . '\/' . self::RE_IP_PREFIX . '|'
+		. self::RE_IP_ADD . ' ?\- ?' . self::RE_IP_ADD . ')';
 
 	/**
 	 * An IPv6 address is made up of 8 words (each x0000 to xFFFF).
 	 * However, the "::" abbreviation can be used on consecutive x0000 words.
-	 * @private
 	 */
-	const RE_IPV6_WORD = '([0-9A-Fa-f]{1,4})';
+	private const RE_IPV6_WORD = '([0-9A-Fa-f]{1,4})';
 	/**
 	 * An IPv6 range is an IP address and a prefix (d0 to d128)
-	 * @private
 	 */
-	const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9][0-9]|[0-9])';
-	/** @private */
-	const RE_IPV6_ADD =
+	private const RE_IPV6_PREFIX = '(12[0-8]|1[01][0-9]|[1-9][0-9]|[0-9])';
+
+	private const RE_IPV6_ADD =
 		'(?:' .
 			// starts with "::" (including "::")
 			':(?::|(?::' . self::RE_IPV6_WORD . '){1,7})' .
@@ -74,22 +72,20 @@ class IPUtils {
 		')';
 	/**
 	 * An IPv6 range is an IP address and a prefix (d1 to d128)
-	 * @private
 	 */
-	const RE_IPV6_RANGE = '(' . self::RE_IPV6_ADD . '\/' . self::RE_IPV6_PREFIX . '|' . self::RE_IPV6_ADD . ' ?\- ?' . self::RE_IPV6_ADD . ')';
+	private const RE_IPV6_RANGE = '(' . self::RE_IPV6_ADD . '\/' . self::RE_IPV6_PREFIX
+		. '|' . self::RE_IPV6_ADD . ' ?\- ?' . self::RE_IPV6_ADD . ')';
 	/**
 	 * For IPv6 canonicalization (NOT for strict validation; these are quite lax!)
-	 * @private
 	 */
-	const RE_IPV6_GAP = ':(?:0+:)*(?::(?:0+:)*)?';
+	public const RE_IPV6_GAP = ':(?:0+:)*(?::(?:0+:)*)?';
 	/** @private */
-	const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
+	private const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
 
 	/**
 	 * This might be useful for regexps used elsewhere, matches any IPv4 or IPv6 address or network
-	 * @private
 	 */
-	const RE_IP_ADDRESS_STRING =
+	private const RE_IP_ADDRESS_STRING =
 		'(?:' .
 			// IPv4
 			self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?' .
