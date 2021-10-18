@@ -762,6 +762,7 @@ class IPUtils {
 	 *
 	 * @param string $addr Something that might be an IP address
 	 * @return string|null Valid IP address or null
+	 * @return-taint none
 	 */
 	public static function canonicalize( $addr ) {
 		// remove zone info (T37738)
