@@ -649,7 +649,9 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ false, '::x', 'Double colon but no IPv6' ],
 			[ [ 'x', 80 ], 'x:80', 'Hostname and port' ],
 			[ false, 'x:x', 'Hostname and invalid port' ],
-			[ [ 'x', false ], 'x', 'Plain hostname' ]
+			[ [ '127.0.0.1', 80 ], '127.0.0.1:80', 'IPv4 address and port' ],
+			[ [ 'x', false ], 'x', 'Plain hostname' ],
+
 		];
 	}
 

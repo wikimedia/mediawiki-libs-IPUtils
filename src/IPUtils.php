@@ -331,7 +331,7 @@ class IPUtils {
 	 *
 	 * A bare IPv6 address is accepted despite the lack of square brackets.
 	 *
-	 * @param string $both The string with the host and port
+	 * @param string $both The string with the host (or IPv4/IPv6 address) and port
 	 * @return array|false Array normally, false on certain failures
 	 */
 	public static function splitHostAndPort( $both ) {
