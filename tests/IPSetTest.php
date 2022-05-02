@@ -171,7 +171,8 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 					'255.255.255.255',
 					'::',
 					'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
-					'10.10.10.10/25', // host bits intentional
+					// host bits intentional
+					'10.10.10.10/25',
 				],
 				[
 					'0.0.0.0' => true,

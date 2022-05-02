@@ -130,7 +130,8 @@ class IPSet {
 				return false;
 			}
 		}
-		$mask = intval( $mask ); // explicit integer convert, checked above
+		// explicit integer convert, checked above
+		$mask = intval( $mask );
 
 		// convert $net to an array of integer bytes, length 4 or 16:
 		$raw = AtEase::quietCall( 'inet_pton', $net );
@@ -189,7 +190,7 @@ class IPSet {
 			}
 			$node =& $node[$index];
 			++$curBit;
-		} // Unreachable outside 'while'
+		}
 	} // @codeCoverageIgnore
 
 	/**
