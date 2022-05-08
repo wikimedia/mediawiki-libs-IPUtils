@@ -22,12 +22,15 @@
 
 namespace Wikimedia\IPSet\Test;
 
+use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 use Wikimedia\IPSet;
 
 /**
  * @group IPSet
+ * @covers \Wikimedia\IPSet
  */
-class IPSetTest extends \PHPUnit\Framework\TestCase {
+class IPSetTest extends TestCase {
 
 	/**
 	 * Provides test cases for IPSetTest::testIPSet
@@ -309,12 +312,14 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 	public function testAddCidrWarning( $cidr ) {
 		$this->expectWarning();
 		$this->expectWarningMessageMatches( '/IPSet: Bad mask.*/' );
+
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
 		// phpcs:ignore Generic.PHP.NoSilencedErrors
-		$ipset = @new IPSet( [ $cidr ] );
+		@new IPSet( [ $cidr ] );
+
 		// 2. Catches error as exception
-		$ipset = new IPSet( [ $cidr ] );
+		new IPSet( [ $cidr ] );
 	}
 
 	public static function provideBadIPSets() {
@@ -327,7 +332,7 @@ class IPSetTest extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider provideBadIPSets
 	 */
 	public function testAddCidrFailure( $cidr ) {
-		$method = new \ReflectionMethod( IPSet::class, 'addCidr' );
+		$method = new ReflectionMethod( IPSet::class, 'addCidr' );
 		$method->setAccessible( true );
 		$ipset = new IPSet( [ $cidr ] );
 		$this->assertFalse( $method->invoke( $ipset, $cidr ) );
