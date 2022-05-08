@@ -22,6 +22,7 @@
  */
 namespace Wikimedia;
 
+use JsonSerializable;
 use Wikimedia\AtEase\AtEase;
 
 /**
@@ -82,7 +83,7 @@ use Wikimedia\AtEase\AtEase;
  * (multi-byte compression nodes were attempted as well, but were
  * a net loss in my test scenarios due to additional match complexity)
  */
-class IPSet {
+class IPSet implements JsonSerializable {
 	/** @var array|bool The root of the IPv4 matching tree */
 	private $root4 = false;
 
@@ -236,5 +237,26 @@ class IPSet {
 		}
 
 		return $node;
+	}
+
+	/**
+	 * @param string $json
+	 *
+	 * @return IPSet
+	 */
+	public static function newFromJson( string $json ): IPSet {
+		$ipset = new IPSet( [] );
+		$decoded = json_decode( $json, true );
+		$ipset->root4 = $decoded['ipv4'] ?? false;
+		$ipset->root6 = $decoded['ipv6'] ?? false;
+
+		return $ipset;
+	}
+
+	public function jsonSerialize(): array {
+		return [
+			'ipv4' => $this->root4,
+			'ipv6' => $this->root6,
+		];
 	}
 }

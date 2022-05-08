@@ -353,4 +353,12 @@ class IPSetTest extends TestCase {
 		$this->assertEquals( $expected, @$ipset->match( $ip ) );
 		$this->assertFalse( $ipset->match( $ip ) );
 	}
+
+	public function testSerialization() {
+		$json = json_encode( new IPSet( [ '127.0.0.0/24' ] ) );
+
+		$ipset = IPSet::newFromJson( $json );
+		$this->assertTrue( $ipset->match( '127.0.0.1' ) );
+		$this->assertFalse( $ipset->match( '10.0.0.1' ) );
+	}
 }
