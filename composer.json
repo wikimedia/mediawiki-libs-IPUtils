@@ -17,7 +17,7 @@
 	"require": {
 		"php": ">=7.2.9",
 		"wikimedia/base-convert": "^2.0.0",
-		"wikimedia/ip-set": "^2.0.0|^3.0.0"
+		"wikimedia/ip-set": "^2.0.0|^3.0.0|^4.0.0"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "41.0.0",
