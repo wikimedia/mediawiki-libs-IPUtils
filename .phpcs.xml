@@ -3,6 +3,9 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
 	</rule>
+	<rule ref="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix">
+		<exclude-pattern>*/benchmarks/*</exclude-pattern>
+	</rule>
 	<file>.</file>
 	<arg name="encoding" value="UTF-8"/>
 	<arg name="extensions" value="php"/>

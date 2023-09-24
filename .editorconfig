@@ -1,6 +1,8 @@
-# http://editorconfig.org
+# https://editorconfig.org
 root = true
 
 [*]
 indent_style = tab
 indent_size = tab
+trim_trailing_whitespace = true
+insert_final_newline = true

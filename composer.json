@@ -1,6 +1,6 @@
 {
 	"name": "wikimedia/ip-utils",
-	"description": "Functions and constants to play with IP addresses and ranges",
+	"description": "Play, analyze, parse, and match IP addresses and CIDR ranges",
 	"license": "GPL-2.0-or-later",
 	"homepage": "https://www.mediawiki.org/wiki/IPUtils",
 	"authors": [
@@ -16,8 +16,7 @@
 	},
 	"require": {
 		"php": ">=7.4.3",
-		"wikimedia/base-convert": "^2.0.0",
-		"wikimedia/ip-set": "^2.0.0|^3.0.0|^4.0.0"
+		"wikimedia/base-convert": "^2.0.0"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "41.0.0",

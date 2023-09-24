@@ -1,6 +1,6 @@
-/coverage
-/doc
-/vendor
-/composer.lock
+/coverage/
+/doc/
+/vendor/
 /.idea
 /.phpunit.result.cache
+/composer.lock

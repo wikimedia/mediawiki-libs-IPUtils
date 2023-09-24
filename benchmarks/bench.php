@@ -21,7 +21,7 @@ echo "Load from serialized json and initialise: {$t}s\n";
 
 checkIPs( $ipsetJSON );
 
-function checkIPs( IPSet $ipset ) {
+function checkIPs( IPSet $ipset ): void {
 	foreach ( [ '69.63.176.1' => true, '127.0.0.1' => false ] as $ip => $exists ) {
 		if ( $ipset->match( $ip ) === $exists ) {
 			echo "IPSet returned correct result for $ip\n";
