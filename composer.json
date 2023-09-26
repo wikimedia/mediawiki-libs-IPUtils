@@ -1,6 +1,6 @@
 {
 	"name": "wikimedia/ip-utils",
-	"description": "Play, analyze, parse, and match IP addresses and CIDR ranges",
+	"description": "Parse, match, and analyze IP addresses and CIDR ranges",
 	"license": "GPL-2.0-or-later",
 	"homepage": "https://www.mediawiki.org/wiki/IPUtils",
 	"authors": [

@@ -4,7 +4,7 @@
 # for help on how to use this file to configure Doxygen.
 
 PROJECT_NAME           = "IPUtils"
-PROJECT_BRIEF          = "Functions and constants to play with IP addresses and ranges"
+PROJECT_BRIEF          = "Parse, match, and analyze IP addresses and CIDR ranges"
 OUTPUT_DIRECTORY       = doc
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = YES

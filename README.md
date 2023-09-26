@@ -3,7 +3,7 @@
 IPUtils
 =======
 
-Play, analyze, parse, and match IP addresses and CIDR ranges. This library supports both IPv4 and IPv6.
+Parse, match, and analyze IP addresses and CIDR ranges. This library supports both IPv4 and IPv6.
 
 Additional documentation about the library can be found on
 [mediawiki.org](https://www.mediawiki.org/wiki/IPUtils).
