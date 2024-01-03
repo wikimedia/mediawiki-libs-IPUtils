@@ -49,8 +49,8 @@ Running tests
 History
 -------
 
-The IPUtils class started life in 2006 as part of [MediaWiki 1.7][https://www.mediawiki.org/wiki/MediaWiki_1.7] ([r15572][https://www.mediawiki.org/wiki/Special:Code/MediaWiki/15572]). It was
+The IPUtils class started life in 2006 as part of [MediaWiki 1.7](https://www.mediawiki.org/wiki/MediaWiki_1.7) ([r15572](https://www.mediawiki.org/wiki/Special:Code/MediaWiki/15572)). It was
 split out of the MediaWiki codebase and published as an independent library
-during the [MediaWiki 1.34][https://www.mediawiki.org/wiki/MediaWiki_1.34] development cycle.
+during the [MediaWiki 1.34](https://www.mediawiki.org/wiki/MediaWiki_1.34) development cycle.
 
 The IPSet class was created by Brandon Black in 2014 as faster alternative to `IPUtils::isInRange()` (MediaWiki 1.24, [change 131758](https://gerrit.wikimedia.org/r/131758)). It was moved to a library during the MediaWiki 1.26 development cycle ([change 221179](https://gerrit.wikimedia.org/r/221179), [change 218384](https://gerrit.wikimedia.org/r/218384)).
