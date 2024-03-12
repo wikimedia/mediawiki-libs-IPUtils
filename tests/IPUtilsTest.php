@@ -670,7 +670,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider provideCombineHostAndPort
 	 */
 	public function testCombineHostAndPort( $expected, $input, $description ) {
-		list( $host, $port, $defaultPort ) = $input;
+		[ $host, $port, $defaultPort ] = $input;
 		$this->assertEquals(
 			$expected,
 			IPUtils::combineHostAndPort( $host, $port, $defaultPort ),
@@ -882,14 +882,14 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	 * @covers \Wikimedia\IPUtils::getIPsInRange()
 	 * @dataProvider provideIPsInRangeToGet
 	 */
-	 public static function provideIPsInRangeToGet() {
+	public static function provideIPsInRangeToGet() {
 		return [
 			[
 				'212.35.31.121/28',
 				[
 					'212.35.31.112', '212.35.31.113', '212.35.31.114', '212.35.31.115', '212.35.31.116',
 					'212.35.31.117', '212.35.31.118', '212.35.31.119', '212.35.31.120', '212.35.31.121',
-					'212.35.31.122','212.35.31.123', '212.35.31.124', '212.35.31.125', '212.35.31.126',
+					'212.35.31.122', '212.35.31.123', '212.35.31.124', '212.35.31.125', '212.35.31.126',
 					'212.35.31.127'
 				]
 			],
@@ -916,12 +916,12 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 				[
 					'212.35.31.112', '212.35.31.113', '212.35.31.114', '212.35.31.115', '212.35.31.116',
 					'212.35.31.117', '212.35.31.118', '212.35.31.119', '212.35.31.120', '212.35.31.121',
-					'212.35.31.122','212.35.31.123', '212.35.31.124', '212.35.31.125', '212.35.31.126',
+					'212.35.31.122', '212.35.31.123', '212.35.31.124', '212.35.31.125', '212.35.31.126',
 					'212.35.31.127'
 				]
 			],
 		];
-	 }
+	}
 
 	/**
 	 * @covers \Wikimedia\IPUtils::getIPsInRange()
