@@ -2,28 +2,31 @@
 
 namespace Wikimedia\IPUtils\Test;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use Wikimedia\IPUtils;
 
 /**
  * Tests for IP validity functions.
  *
  * @todo Test methods in this call should be split into a method and a
- * dataprovider.
+ * data provider.
+ *
+ * @covers \Wikimedia\IPUtils
  */
-class IPUtilsTest extends \PHPUnit\Framework\TestCase {
+class IPUtilsTest extends TestCase {
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isIPAddress
 	 * @dataProvider provideInvalidIPs
 	 */
-	public function testIsNotIPAddress( $val, $desc ) {
+	public function testIsNotIPAddress( $val, $desc ): void {
 		$this->assertFalse( IPUtils::isIPAddress( $val ), $desc );
 	}
 
 	/**
 	 * Provide a list of things that aren't IP addresses
 	 */
-	public function provideInvalidIPs() {
+	public function provideInvalidIPs(): array {
 		return [
 			[ false, 'Boolean false is not an IP' ],
 			[ true, 'Boolean true is not an IP' ],
@@ -40,27 +43,29 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		];
 	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::isIPAddress
-	 */
-	public function testisIPAddress() {
+	public function testisIPAddress(): void {
 		$this->assertTrue( IPUtils::isIPAddress( '::' ), 'RFC 4291 IPv6 Unspecified Address' );
 		$this->assertTrue( IPUtils::isIPAddress( '::1' ), 'RFC 4291 IPv6 Loopback Address' );
 		$this->assertTrue( IPUtils::isIPAddress( '74.24.52.13/20' ), 'IPv4 range' );
 		$this->assertTrue( IPUtils::isIPAddress( 'fc:100:a:d:1:e:ac:0/24' ), 'IPv6 range' );
 		$this->assertTrue( IPUtils::isIPAddress( 'fc::100:a:d:1:e:ac/96' ), 'IPv6 range with "::"' );
 
-		$validIPs = [ 'fc:100::', 'fc:100:a:d:1:e:ac::', 'fc::100', '::fc:100:a:d:1:e:ac',
-			'::fc', 'fc::100:a:d:1:e:ac', 'fc:100:a:d:1:e:ac:0', '124.24.52.13', '1.24.52.13' ];
+		$validIPs = [
+			'fc:100::',
+			'fc:100:a:d:1:e:ac::',
+			'fc::100',
+			'::fc:100:a:d:1:e:ac',
+			'::fc', 'fc::100:a:d:1:e:ac',
+			'fc:100:a:d:1:e:ac:0',
+			'124.24.52.13',
+			'1.24.52.13'
+		];
 		foreach ( $validIPs as $ip ) {
 			$this->assertTrue( IPUtils::isIPAddress( $ip ), "$ip is a valid IP address" );
 		}
 	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::isIPv6
-	 */
-	public function testisIPv6() {
+	public function testisIPv6(): void {
 		$this->assertFalse( IPUtils::isIPv6( ':fc:100::' ), 'IPv6 starting with lone ":"' );
 		$this->assertFalse( IPUtils::isIPv6( 'fc:100:::' ), 'IPv6 ending with a ":::"' );
 		$this->assertFalse( IPUtils::isIPv6( 'fc:300' ), 'IPv6 with only 2 words' );
@@ -116,14 +121,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isIPv4
 	 * @dataProvider provideInvalidIPv4Addresses
 	 */
-	public function testisNotIPv4( $bogusIP, $desc ) {
+	public function testisNotIPv4( $bogusIP, $desc ): void {
 		$this->assertFalse( IPUtils::isIPv4( $bogusIP ), $desc );
 	}
 
-	public function provideInvalidIPv4Addresses() {
+	public function provideInvalidIPv4Addresses(): array {
 		return [
 			[ false, 'Boolean false is not an IP' ],
 			[ true, 'Boolean true is not an IP' ],
@@ -137,17 +141,16 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isIPv4
 	 * @dataProvider provideValidIPv4Address
 	 */
-	public function testIsIPv4( $ip, $desc ) {
+	public function testIsIPv4( $ip, $desc ): void {
 		$this->assertTrue( IPUtils::isIPv4( $ip ), $desc );
 	}
 
 	/**
 	 * Provide some IPv4 addresses and ranges
 	 */
-	public function provideValidIPv4Address() {
+	public function provideValidIPv4Address(): array {
 		return [
 			[ '124.24.52.13', 'Valid IPv4 address' ],
 			[ '1.24.52.13', 'Another valid IPv4 address' ],
@@ -155,12 +158,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		];
 	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::isValid
-	 * @covers \Wikimedia\IPUtils::isValidIPv4
-	 * @covers \Wikimedia\IPUtils::isValidIPv6
-	 */
-	public function testValidIPs() {
+	public function testValidIPs(): void {
 		foreach ( range( 0, 255 ) as $i ) {
 			$a = sprintf( "%03d", $i );
 			$b = sprintf( "%02d", $i );
@@ -207,10 +205,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::isValid
-	 */
-	public function testInvalidIPs() {
+	public function testInvalidIPs(): void {
 		// Out of range...
 		foreach ( range( 256, 999 ) as $i ) {
 			$a = sprintf( "%03d", $i );
@@ -230,7 +225,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 				$this->assertFalse( IPUtils::isValid( $ip ), "$ip is not a valid IPv6 address" );
 			}
 		}
-		// Have CIDR
+		// With CIDR suffix
 		$ipCIDRs = [
 			'212.35.31.121/32',
 			'212.35.31.121/18',
@@ -240,8 +235,10 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			'c:ff:12:1:ea:d:321:5/120',
 		];
 		foreach ( $ipCIDRs as $i ) {
-			$this->assertFalse( IPUtils::isValid( $i ),
-				"$i is an invalid IP address because it is a range" );
+			$this->assertFalse(
+				IPUtils::isValid( $i ),
+				"$i is an invalid IP address because it is a range"
+			);
 		}
 		// Incomplete/garbage
 		$invalid = [
@@ -260,13 +257,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Provide some valid IP ranges
 	 */
-	public function provideValidRanges() {
+	public function provideValidRanges(): array {
 		return [
 			[ '116.17.184.5/32' ],
 			[ '116.17.184.5-116.17.184.5' ],
 			[ '0.17.184.5/30' ],
 			[ '0.17.184.4-0.17.184.7' ],
-			// Test allowing spaces around -
+			// Test allowing spaces around a hyphen (-)
 			[ '0.17.184.4 - 0.17.184.7' ],
 			[ '16.17.184.1/24' ],
 			[ '16.17.184.0-16.17.184.255' ],
@@ -277,7 +274,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 			[ '30.242.52.14/0' ],
 			[ '::e:f:2001/96' ],
 			[ '0:0:0:0:0:e:0:0-0:0:0:0:0:e:ffff:ffff' ],
-			// Test allowing spaces around -
+			// Test allowing spaces around a hyphen (-)
 			[ '0:0:0:0:0:e:0:0 - 0:0:0:0:0:e:ffff:ffff' ],
 			[ '::c:f:2001/128' ],
 			[ '0:0:0:0:0:c:f:2001-0:0:0:0:0:c:f:2001' ],
@@ -292,24 +289,20 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isValidRange
-	 * @covers \Wikimedia\IPUtils::isValidIPv4Range
-	 * @covers \Wikimedia\IPUtils::isValidIPv6Range
 	 * @dataProvider provideValidRanges
 	 */
-	public function testValidRanges( $range ) {
+	public function testValidRanges( $range ): void {
 		$this->assertTrue( IPUtils::isValidRange( $range ), "$range is a valid IP range" );
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isValidRange
 	 * @dataProvider provideInvalidRanges
 	 */
-	public function testInvalidRanges( $invalid ) {
+	public function testInvalidRanges( $invalid ): void {
 		$this->assertFalse( IPUtils::isValidRange( $invalid ), "$invalid is not a valid IP range" );
 	}
 
-	public function provideInvalidRanges() {
+	public function provideInvalidRanges(): array {
 		return [
 			[ '116.17.184.5/33' ],
 			[ '0.17.184.5/130' ],
@@ -327,18 +320,14 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::sanitizeIP
 	 * @dataProvider provideSanitizeIP
 	 */
-	public function testSanitizeIP( $expected, $input ) {
+	public function testSanitizeIP( $expected, $input ): void {
 		$result = IPUtils::sanitizeIP( $input );
 		$this->assertEquals( $expected, $result );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testSanitizeIP()
-	 */
-	public static function provideSanitizeIP() {
+	public static function provideSanitizeIP(): array {
 		return [
 			[ '0.0.0.0', '0.0.0.0' ],
 			[ '0.0.0.0', '00.00.00.00' ],
@@ -363,20 +352,15 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::toHex
-	 * @covers \Wikimedia\IPUtils::IPv6ToRawHex
 	 * @dataProvider provideToHex
 	 */
-	public function testToHex( $expected, $input ) {
+	public function testToHex( $expected, $input ): void {
 		$result = IPUtils::toHex( $input );
 		$this->assertTrue( $result === false || is_string( $result ) );
 		$this->assertEquals( $expected, $result );
 	}
 
-	/**
-	 * Provider for IPUtils::testToHex()
-	 */
-	public static function provideToHex() {
+	public static function provideToHex(): array {
 		return [
 			[ '00000001', '0.0.0.1' ],
 			[ '01020304', '1.2.3.4' ],
@@ -395,18 +379,14 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::isPublic
 	 * @dataProvider provideIsPublic
 	 */
-	public function testIsPublic( $expected, $input ) {
+	public function testIsPublic( $expected, $input ): void {
 		$result = IPUtils::isPublic( $input );
 		$this->assertEquals( $expected, $result );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testIsPublic()
-	 */
-	public static function provideIsPublic() {
+	public static function provideIsPublic(): array {
 		return [
 			// RFC 4193 (local)
 			[ false, 'fc00::3' ],
@@ -441,7 +421,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	 * @param string $CIDR
 	 * @param string $msg
 	 */
-	private function assertFalseCIDR( $CIDR, $msg = '' ) {
+	private function assertFalseCIDR( $CIDR, $msg = '' ): void {
 		$ff = [ false, false ];
 		$this->assertEquals( $ff, IPUtils::parseCIDR( $CIDR ), $msg );
 	}
@@ -452,25 +432,22 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	 * @param string $expected
 	 * @param string $CIDR
 	 */
-	private function assertNet( $expected, $CIDR ) {
+	private function assertNet( $expected, $CIDR ): void {
 		$parse = IPUtils::parseCIDR( $CIDR );
 		$this->assertEquals( $expected, long2ip( $parse[0] ), "network shifting $CIDR" );
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::formatHex
-	 * @covers \Wikimedia\IPUtils::hexToOctet
-	 * @covers \Wikimedia\IPUtils::hexToQuad
 	 * @dataProvider provideOctetsAndHexes
 	 */
-	public function testHexToOctet( $octet, $hex ) {
+	public function testHexToOctet( $octet, $hex ): void {
 		$this->assertEquals( $octet, IPUtils::formatHex( $hex ) );
 	}
 
 	/**
 	 * Provide some hex and octet representations of the same IPs
 	 */
-	public function provideOctetsAndHexes() {
+	public function provideOctetsAndHexes(): array {
 		return [
 			// IPv4
 			[ '0.0.0.1', '00000001' ],
@@ -502,9 +479,8 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * IPUtils::parseCIDR() returns an array containing a signed IP address
 	 * representing the network mask and the bit mask.
-	 * @covers \Wikimedia\IPUtils::parseCIDR
 	 */
-	public function testCIDRParsing() {
+	public function testCIDRParsing(): void {
 		$this->assertFalseCIDR( '192.0.2.0', "missing mask" );
 		$this->assertFalseCIDR( '192.0.2.0/', "missing bitmask" );
 
@@ -537,10 +513,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals( [ "51540598785", 128 ], IPUtils::parseCIDR( '::c:f:2001/128' ) );
 	}
 
-	/**
-	 * @covers \Wikimedia\IPUtils::canonicalize
-	 */
-	public function testCanonicalize() {
+	public function testCanonicalize(): void {
 		$this->assertEquals(
 			'192.0.2.152',
 			IPUtils::canonicalize( '192.0.2.152' ),
@@ -594,11 +567,10 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * Issues there are most probably from IPUtils::toHex() or IPUtils::parseRange()
-	 * @covers \Wikimedia\IPUtils::isInRange
-	 * @covers \Wikimedia\IPUtils::isInRanges
+	 *
 	 * @dataProvider provideIPsAndRanges
 	 */
-	public function testIPIsInRanges( $expected, $addr, $ranges, $message = '' ) {
+	public function testIPIsInRanges( $expected, $addr, $ranges, $message = '' ): void {
 		$this->assertEquals(
 			$expected,
 			IPUtils::isInRanges( $addr, $ranges ),
@@ -606,10 +578,7 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testIPIsInRanges()
-	 */
-	public static function provideIPsAndRanges() {
+	public static function provideIPsAndRanges(): array {
 		// Format: (expected boolean, address, ranges, optional message)
 		return [
 			// IPv4
@@ -637,17 +606,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::splitHostAndPort()
 	 * @dataProvider provideSplitHostAndPort
 	 */
-	public function testSplitHostAndPort( $expected, $input, $description ) {
+	public function testSplitHostAndPort( $expected, $input, $description ): void {
 		$this->assertEquals( $expected, IPUtils::splitHostAndPort( $input ), $description );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::splitHostAndPort()
-	 */
-	public static function provideSplitHostAndPort() {
+	public static function provideSplitHostAndPort(): array {
 		return [
 			[ false, '[', 'Unclosed square bracket' ],
 			[ false, '[::', 'Unclosed square bracket 2' ],
@@ -666,21 +631,18 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::combineHostAndPort()
 	 * @dataProvider provideCombineHostAndPort
 	 */
-	public function testCombineHostAndPort( $expected, $input, $description ) {
+	public function testCombineHostAndPort( $expected, $input, $description ): void {
 		[ $host, $port, $defaultPort ] = $input;
 		$this->assertEquals(
 			$expected,
 			IPUtils::combineHostAndPort( $host, $port, $defaultPort ),
-			$description );
+			$description
+		);
 	}
 
-	/**
-	 * Provider for IPUtilsTest::combineHostAndPort()
-	 */
-	public static function provideCombineHostAndPort() {
+	public static function provideCombineHostAndPort(): array {
 		return [
 			[ '[::1]', [ '::1', 2, 2 ], 'IPv6 default port' ],
 			[ '[::1]:2', [ '::1', 2, 3 ], 'IPv6 non-default port' ],
@@ -690,17 +652,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::sanitizeRange()
 	 * @dataProvider provideIPCIDRs
 	 */
-	public function testSanitizeRange( $input, $expected, $description ) {
+	public function testSanitizeRange( $input, $expected, $description ): void {
 		$this->assertEquals( $expected, IPUtils::sanitizeRange( $input ), $description );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testSanitizeRange()
-	 */
-	public static function provideIPCIDRs() {
+	public static function provideIPCIDRs(): array {
 		return [
 			[ '35.56.31.252/16', '35.56.0.0/16', 'IPv4 range' ],
 			[ '135.16.21.252/24', '135.16.21.0/24', 'IPv4 range' ],
@@ -714,17 +672,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::prettifyIP()
 	 * @dataProvider provideIPsToPrettify
 	 */
-	public function testPrettifyIP( $ip, $prettified ) {
+	public function testPrettifyIP( $ip, $prettified ): void {
 		$this->assertEquals( $prettified, IPUtils::prettifyIP( $ip ), "Prettify of $ip" );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testPrettifyIP()
-	 */
-	public static function provideIPsToPrettify() {
+	public static function provideIPsToPrettify(): array {
 		return [
 			[ '0:0:0:0:0:0:0:0', '::' ],
 			[ '0:0:0::0:0:0', '::' ],
@@ -748,20 +702,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::parseRange()
-	 * @covers \Wikimedia\IPUtils::parseRange6()
-	 * @covers \Wikimedia\IPUtils::parseCIDR()
-	 * @covers \Wikimedia\IPUtils::parseCIDR6()
 	 * @dataProvider provideIPsToConvertToRanges
 	 */
-	public function testParseRange( $range, $hexRange ) {
+	public function testParseRange( $range, $hexRange ): void {
 		$this->assertEquals( $hexRange, IPUtils::parseRange( $range ), "Range parsing" );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testParseRange()
-	 */
-	public function provideIPsToConvertToRanges() {
+	public function provideIPsToConvertToRanges(): array {
 		return [
 			[ '116.17.184.5/32', [ '7411B805', '7411B805' ] ],
 			[ '116.17.184.5-116.17.184.5', [ '7411B805', '7411B805' ] ],
@@ -853,17 +800,13 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::getSubnet()
 	 * @dataProvider provideSubnetsToGet
 	 */
-	public function testGetSubnet( $ip, $subnet ) {
+	public function testGetSubnet( $ip, $subnet ): void {
 		$this->assertEquals( $subnet, IPUtils::getSubnet( $ip ), "Subnet extraction" );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testGetSubnet()
-	 */
-	public function provideSubnetsToGet() {
+	public function provideSubnetsToGet(): array {
 		return [
 			[ '127.0.0.1', '127.0.0' ],
 			[ '::6d:f:2001', 'v6-00000000000000000000000000000000' ],
@@ -871,18 +814,16 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::getIPsInRange()
 	 * @dataProvider provideIPsInRangeToGet
 	 */
-	public function testGetIPsInRange( $range, $expected ) {
+	public function testGetIPsInRange( $range, $expected ): void {
 		$this->assertEquals( $expected, IPUtils::getIPsInRange( $range ), "IPs from a range" );
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::getIPsInRange()
 	 * @dataProvider provideIPsInRangeToGet
 	 */
-	public static function provideIPsInRangeToGet() {
+	public static function provideIPsInRangeToGet(): array {
 		return [
 			[
 				'212.35.31.121/28',
@@ -924,22 +865,18 @@ class IPUtilsTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \Wikimedia\IPUtils::getIPsInRange()
 	 * @dataProvider provideIPsInForbiddenRangeToNotGet
 	 */
-	public function testGetForbiddenIPsInRange( $range, $expected ) {
-		$this->expectException( \InvalidArgumentException::class );
+	public function testGetForbiddenIPsInRange( $range, $expected ): void {
+		$this->expectException( InvalidArgumentException::class );
 		$this->expectExceptionMessage( $expected );
 		IPUtils::getIPsInRange( $range );
 	}
 
-	/**
-	 * Provider for IPUtilsTest::testGetForbiddenIPsInRange
-	 */
-	public static function provideIPsInForbiddenRangeToNotGet() {
+	public static function provideIPsInForbiddenRangeToNotGet(): array {
 		$string = 'is too large, it contains more than 65536 addresses';
 		return [
-			// By definition, a 'range' must contains more than one value
+			// By definition, a 'range' must contain more than one value IP
 			[ '212.35.31.121/32', 'Invalid range given: ' . '212.35.31.121/32' ],
 			[ '16.20.184.255-16.20.184.255', 'Invalid range given: ' . '16.20.184.255-16.20.184.255' ],
 

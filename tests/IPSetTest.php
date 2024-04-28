@@ -40,7 +40,7 @@ class IPSetTest extends TestCase {
 	 * config is an array constructor argument for IPSet, and the tests are
 	 * an array of IP => expected (boolean) result against the config dataset.
 	 */
-	public static function provideIPSets() {
+	public static function provideIPSets(): array {
 		$testcases = [
 			'old_list_subset' => [
 				[
@@ -291,7 +291,7 @@ class IPSetTest extends TestCase {
 	 *
 	 * @dataProvider provideIPSets
 	 */
-	public function testIPSet( $desc, array $cfg, array $tests ) {
+	public function testIPSet( $desc, array $cfg, array $tests ): void {
 		$ipset = new IPSet( $cfg );
 		foreach ( $tests as $ip => $expected ) {
 			$result = $ipset->match( $ip );
@@ -299,7 +299,7 @@ class IPSetTest extends TestCase {
 		}
 	}
 
-	public static function provideBadMaskSets() {
+	public static function provideBadMaskSets(): array {
 		return [
 			'bad mask ipv4' => [ '0.0.0.0/33' ],
 			'bad mask ipv6' => [ '2620:0:861:1::/129' ],
@@ -309,7 +309,7 @@ class IPSetTest extends TestCase {
 	/**
 	 * @dataProvider provideBadMaskSets
 	 */
-	public function testAddCidrWarning( $cidr ) {
+	public function testAddCidrWarning( $cidr ): void {
 		$this->expectWarning();
 		$this->expectWarningMessageMatches( '/IPSet: Bad mask.*/' );
 
@@ -322,7 +322,7 @@ class IPSetTest extends TestCase {
 		new IPSet( [ $cidr ] );
 	}
 
-	public static function provideBadIPSets() {
+	public static function provideBadIPSets(): array {
 		return [
 			'inet fail' => [ '0af.0af' ],
 		];
@@ -331,7 +331,7 @@ class IPSetTest extends TestCase {
 	/**
 	 * @dataProvider provideBadIPSets
 	 */
-	public function testAddCidrFailure( $cidr ) {
+	public function testAddCidrFailure( $cidr ): void {
 		$method = new ReflectionMethod( IPSet::class, 'addCidr' );
 		$method->setAccessible( true );
 		$ipset = new IPSet( [ $cidr ] );
@@ -347,14 +347,14 @@ class IPSetTest extends TestCase {
 	/**
 	 * @dataProvider provideBadMatches
 	 */
-	public function testMatchFailure( $ip, $expected ) {
+	public function testMatchFailure( $ip, $expected ): void {
 		$ipset = new IPSet( [] );
 		// phpcs:ignore Generic.PHP.NoSilencedErrors
 		$this->assertEquals( $expected, @$ipset->match( $ip ) );
 		$this->assertFalse( $ipset->match( $ip ) );
 	}
 
-	public function testSerialization() {
+	public function testSerialization(): void {
 		$json = json_encode( new IPSet( [ '127.0.0.0/24' ] ) );
 
 		$ipset = IPSet::newFromJson( $json );
