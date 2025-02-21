@@ -489,7 +489,7 @@ class IPUtils {
 	 */
 	public static function toHex( $ip ) {
 		if ( self::isIPv6( $ip ) ) {
-			$n = 'v6-' . self::IPv6ToRawHex( $ip );
+			$n = 'v6-' . self::convertIPv6ToRawHex( $ip );
 		} elseif ( self::isIPv4( $ip ) ) {
 			// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
 			// also double/triple 0 needs to be changed to just a single 0 for ip2long.
@@ -523,7 +523,7 @@ class IPUtils {
 	 * @param string $ip Octet ipv6 IP address.
 	 * @return string|bool Pure hex (uppercase); false on failure
 	 */
-	private static function IPv6ToRawHex( $ip ) {
+	private static function convertIPv6ToRawHex( $ip ) {
 		$ip = self::sanitizeIP( $ip );
 		if ( !$ip ) {
 			return false;
@@ -642,7 +642,7 @@ class IPUtils {
 			return [ false, false ];
 		}
 		[ $network, $bits ] = $parts;
-		$network = self::IPv6ToRawHex( $network );
+		$network = self::convertIPv6ToRawHex( $network );
 		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 128 ) {
 			'@phan-var int $bits';
 			if ( $bits === 0 ) {
