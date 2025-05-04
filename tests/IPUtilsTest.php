@@ -26,7 +26,7 @@ class IPUtilsTest extends TestCase {
 	/**
 	 * Provide a list of things that aren't IP addresses
 	 */
-	public function provideInvalidIPs(): array {
+	public static function provideInvalidIPs(): array {
 		return [
 			[ false, 'Boolean false is not an IP' ],
 			[ true, 'Boolean true is not an IP' ],
@@ -127,7 +127,7 @@ class IPUtilsTest extends TestCase {
 		$this->assertFalse( IPUtils::isIPv4( $bogusIP ), $desc );
 	}
 
-	public function provideInvalidIPv4Addresses(): array {
+	public static function provideInvalidIPv4Addresses(): array {
 		return [
 			[ false, 'Boolean false is not an IP' ],
 			[ true, 'Boolean true is not an IP' ],
@@ -150,7 +150,7 @@ class IPUtilsTest extends TestCase {
 	/**
 	 * Provide some IPv4 addresses and ranges
 	 */
-	public function provideValidIPv4Address(): array {
+	public static function provideValidIPv4Address(): array {
 		return [
 			[ '124.24.52.13', 'Valid IPv4 address' ],
 			[ '1.24.52.13', 'Another valid IPv4 address' ],
@@ -257,7 +257,7 @@ class IPUtilsTest extends TestCase {
 	/**
 	 * Provide some valid IP ranges
 	 */
-	public function provideValidRanges(): array {
+	public static function provideValidRanges(): array {
 		return [
 			[ '116.17.184.5/32' ],
 			[ '116.17.184.5-116.17.184.5' ],
@@ -302,7 +302,7 @@ class IPUtilsTest extends TestCase {
 		$this->assertFalse( IPUtils::isValidRange( $invalid ), "$invalid is not a valid IP range" );
 	}
 
-	public function provideInvalidRanges(): array {
+	public static function provideInvalidRanges(): array {
 		return [
 			[ '116.17.184.5/33' ],
 			[ '0.17.184.5/130' ],
@@ -447,7 +447,7 @@ class IPUtilsTest extends TestCase {
 	/**
 	 * Provide some hex and octet representations of the same IPs
 	 */
-	public function provideOctetsAndHexes(): array {
+	public static function provideOctetsAndHexes(): array {
 		return [
 			// IPv4
 			[ '0.0.0.1', '00000001' ],
@@ -708,7 +708,7 @@ class IPUtilsTest extends TestCase {
 		$this->assertEquals( $hexRange, IPUtils::parseRange( $range ), "Range parsing" );
 	}
 
-	public function provideIPsToConvertToRanges(): array {
+	public static function provideIPsToConvertToRanges(): array {
 		return [
 			[ '116.17.184.5/32', [ '7411B805', '7411B805' ] ],
 			[ '116.17.184.5-116.17.184.5', [ '7411B805', '7411B805' ] ],
@@ -806,7 +806,7 @@ class IPUtilsTest extends TestCase {
 		$this->assertEquals( $subnet, IPUtils::getSubnet( $ip ), "Subnet extraction" );
 	}
 
-	public function provideSubnetsToGet(): array {
+	public static function provideSubnetsToGet(): array {
 		return [
 			[ '127.0.0.1', '127.0.0' ],
 			[ '::6d:f:2001', 'v6-00000000000000000000000000000000' ],
