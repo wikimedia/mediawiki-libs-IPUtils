@@ -16,7 +16,7 @@
 	},
 	"require": {
 		"ext-json": "*",
-		"php": ">=7.4.3",
+		"php": ">=8.1",
 		"wikimedia/base-convert": "^2.0.0"
 	},
 	"require-dev": {
