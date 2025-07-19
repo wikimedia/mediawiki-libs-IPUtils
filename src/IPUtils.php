@@ -276,7 +276,7 @@ class IPUtils {
 		}
 		if ( self::isIPv6( $ip ) ) {
 			// Split IP into an address and a CIDR
-			if ( strpos( $ip, '/' ) !== false ) {
+			if ( str_contains( $ip, '/' ) ) {
 				[ $ip, $cidr ] = explode( '/', $ip, 2 );
 			} else {
 				[ $ip, $cidr ] = [ $ip, '' ];
@@ -328,7 +328,7 @@ class IPUtils {
 	 * @return array|false Array normally, false on certain failures
 	 */
 	public static function splitHostAndPort( $both ) {
-		if ( substr( $both, 0, 1 ) === '[' ) {
+		if ( str_starts_with( $both, '[' ) ) {
 			if ( preg_match( '/^\[(' . self::RE_IPV6_ADD . ')\](?::(?P<port>\d+))?$/', $both, $m ) ) {
 				if ( isset( $m['port'] ) ) {
 					return [ $m[1], intval( $m['port'] ) ];
@@ -377,7 +377,7 @@ class IPUtils {
 	 * @return string
 	 */
 	public static function combineHostAndPort( $host, $port, $defaultPort = false ) {
-		if ( strpos( $host, ':' ) !== false ) {
+		if ( str_contains( $host, ':' ) ) {
 			$host = "[$host]";
 		}
 		if ( $defaultPort !== false && $port === $defaultPort ) {
@@ -394,7 +394,7 @@ class IPUtils {
 	 * @return string Quad-dotted (IPv4) or octet notation (IPv6)
 	 */
 	public static function formatHex( $hex ) {
-		if ( substr( $hex, 0, 3 ) === 'v6-' ) {
+		if ( str_starts_with( $hex, 'v6-' ) ) {
 			// IPv6
 			return self::hexToOctet( substr( $hex, 3 ) );
 		}
@@ -590,7 +590,7 @@ class IPUtils {
 	 */
 	public static function parseRange( $range ) {
 		// CIDR notation
-		if ( strpos( $range, '/' ) !== false ) {
+		if ( str_contains( $range, '/' ) ) {
 			if ( self::isIPv6( $range ) ) {
 				return self::parseRange6( $range );
 			}
@@ -602,7 +602,7 @@ class IPUtils {
 				$end = sprintf( '%08X', $network + 2 ** ( 32 - $bits ) - 1 );
 			}
 		// Explicit range
-		} elseif ( strpos( $range, '-' ) !== false ) {
+		} elseif ( str_contains( $range, '-' ) ) {
 			[ $start, $end ] = array_map( 'trim', explode( '-', $range, 2 ) );
 			if ( self::isIPv6( $start ) && self::isIPv6( $end ) ) {
 				return self::parseRange6( $range );
@@ -686,7 +686,7 @@ class IPUtils {
 		$end = false;
 
 		// CIDR notation...
-		if ( strpos( $range, '/' ) !== false ) {
+		if ( str_contains( $range, '/' ) ) {
 			[ $network, $bits ] = self::parseCIDR6( $range );
 			if ( $network !== false ) {
 				$start = \Wikimedia\base_convert( $network, 10, 16, 32, false );
@@ -701,7 +701,7 @@ class IPUtils {
 				$end = "v6-$end";
 			}
 		// Explicit range notation...
-		} elseif ( strpos( $range, '-' ) !== false ) {
+		} elseif ( str_contains( $range, '-' ) ) {
 			[ $start, $end ] = array_map( 'trim', explode( '-', $range, 2 ) );
 			$start = self::toHex( $start );
 			$end = self::toHex( $end );
