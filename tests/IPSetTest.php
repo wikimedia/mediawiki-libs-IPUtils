@@ -310,16 +310,24 @@ class IPSetTest extends TestCase {
 	 * @dataProvider provideBadMaskSets
 	 */
 	public function testAddCidrWarning( $cidr ): void {
-		$this->expectWarning();
-		$this->expectWarningMessageMatches( '/IPSet: Bad mask.*/' );
-
 		// 1. Ignoring errors to reach the otherwise unreachable 'return'.
 		// https://github.com/sebastianbergmann/php-code-coverage/issues/513
 		// phpcs:ignore Generic.PHP.NoSilencedErrors
 		@new IPSet( [ $cidr ] );
 
-		// 2. Catches error as exception
-		new IPSet( [ $cidr ] );
+		try {
+			$actualMsg = '';
+			set_error_handler( static function ( $_, $msg ) use ( &$actualMsg ) {
+				$actualMsg = $msg;
+			}, E_USER_WARNING );
+
+			// 2. Catches error as exception
+			new IPSet( [ $cidr ] );
+
+			$this->assertStringStartsWith( 'IPSet: Bad mask ', $actualMsg, 'PHP warning' );
+		} finally {
+			restore_error_handler();
+		}
 	}
 
 	public static function provideBadIPSets(): array {
