@@ -341,7 +341,6 @@ class IPSetTest extends TestCase {
 	 */
 	public function testAddCidrFailure( $cidr ): void {
 		$method = new ReflectionMethod( IPSet::class, 'addCidr' );
-		$method->setAccessible( true );
 		$ipset = new IPSet( [ $cidr ] );
 		$this->assertFalse( $method->invoke( $ipset, $cidr ) );
 	}
