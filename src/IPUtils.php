@@ -412,13 +412,13 @@ class IPUtils {
 	public static function hexToOctet( $ip_hex ) {
 		// Pad hex to 32 chars (128 bits)
 		$ip_hex = str_pad( strtoupper( $ip_hex ), 32, '0', STR_PAD_LEFT );
-		// Separate into 8 words
-		$ip_oct = substr( $ip_hex, 0, 4 );
-		for ( $n = 1; $n < 8; $n++ ) {
-			$ip_oct .= ':' . substr( $ip_hex, 4 * $n, 4 );
+		// Separate into 8 words a 4 bytes
+		$ip_oct = [];
+		foreach ( str_split( $ip_hex, 4 ) as $o ) {
+			// NO leading zeroes
+			$ip_oct[] = ltrim( $o, '0' ) ?: '0';
 		}
-		// NO leading zeroes
-		return preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip_oct );
+		return implode( ':', $ip_oct );
 	}
 
 	/**
@@ -429,17 +429,14 @@ class IPUtils {
 	 */
 	public static function hexToQuad( $ip_hex ) {
 		// Pad hex to 8 chars (32 bits)
-		$ip_hex = str_pad( strtoupper( $ip_hex ), 8, '0', STR_PAD_LEFT );
+		$ip_hex = str_pad( $ip_hex, 8, '0', STR_PAD_LEFT );
 		// Separate into four quads
-		$s = '';
-		for ( $i = 0; $i < 4; $i++ ) {
-			if ( $s !== '' ) {
-				$s .= '.';
-			}
-			$s .= base_convert( substr( $ip_hex, $i * 2, 2 ), 16, 10 );
+		$ip_quads = [];
+		foreach ( str_split( $ip_hex, 2 ) as $q ) {
+			$ip_quads[] = hexdec( $q );
 		}
 
-		return $s;
+		return implode( '.', $ip_quads );
 	}
 
 	/**
