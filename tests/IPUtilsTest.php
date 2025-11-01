@@ -510,6 +510,7 @@ class IPUtilsTest extends TestCase {
 		$this->assertNet( '134.0.0.0', '134.0.5.1/8' );
 
 		// Test the IPv6 offloading to parseCIDR6()
+		$this->assertEquals( [ "0", 0 ], IPUtils::parseCIDR( '::c:f:2001/0' ) );
 		$this->assertEquals( [ "51540598785", 128 ], IPUtils::parseCIDR( '::c:f:2001/128' ) );
 	}
 

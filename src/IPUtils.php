@@ -551,12 +551,7 @@ class IPUtils {
 		[ $network, $bits ] = $parts;
 		$network = ip2long( $network );
 		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 32 ) {
-			'@phan-var int $bits';
-			if ( $bits === 0 ) {
-				$network = 0;
-			} else {
-				$network &= ~( ( 1 << ( 32 - (int)$bits ) ) - 1 );
-			}
+			$network &= ~( ( 1 << ( 32 - (int)$bits ) ) - 1 );
 			// Convert to unsigned
 			if ( $network < 0 ) {
 				$network += 2 ** 32;
@@ -641,18 +636,13 @@ class IPUtils {
 		[ $network, $bits ] = $parts;
 		$network = self::convertIPv6ToRawHex( $network );
 		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 128 ) {
-			'@phan-var int $bits';
-			if ( $bits === 0 ) {
-				$network = "0";
-			} else {
-				// Native 32 bit functions WONT work here!!!
-				// Convert to a padded binary number
-				$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
-				// Truncate the last (128-$bits) bits and replace them with zeros
-				$network = str_pad( substr( $network, 0, (int)$bits ), 128, '0', STR_PAD_RIGHT );
-				// Convert back to an integer
-				$network = \Wikimedia\base_convert( $network, 2, 10 );
-			}
+			// Native 32 bit functions WONT work here!!!
+			// Convert to a padded binary number
+			$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
+			// Truncate the last (128-$bits) bits and replace them with zeros
+			$network = str_pad( substr( $network, 0, (int)$bits ), 128, '0', STR_PAD_RIGHT );
+			// Convert back to an integer
+			$network = \Wikimedia\base_convert( $network, 2, 10 );
 		} else {
 			$network = false;
 			$bits = false;
