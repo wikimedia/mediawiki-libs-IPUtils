@@ -187,28 +187,32 @@ class IPUtils {
 	}
 
 	/**
-	 * Convert an IP into a verbose, uppercase, normalized form.
-	 * Both IPv4 and IPv6 addresses are trimmed. Additionally,
-	 * IPv6 addresses in octet notation are expanded to 8 words;
+	 * Convert an IPv4 address into a verbose, uppercase, normalized form.
 	 * IPv4 addresses have leading zeros, in each octet, removed.
 	 *
-	 * @param string $ip IP address in quad or octet form (CIDR or not).
+	 * @param string $ip IPv4 address in quad or octet form (CIDR or not).
 	 * @return string|null
 	 */
-	public static function sanitizeIP( $ip ) {
+	private static function sanitizeIPv4( $ip ) {
 		$ip = trim( $ip );
 		if ( $ip === '' ) {
 			return null;
 		}
-		if ( self::isIPv4( $ip ) ) {
-			// Remove leading 0's from octet representation of IPv4 address
-			return preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
-		}
-		if ( !self::isIPv6( $ip ) ) {
-			// If it's not IPv4 or IPv6, it's not an IP. Just return trimmed
-			// value, since sanitizeIP() is called in a number of contexts
-			// where usernames are supplied as input.
-			return $ip;
+		// Remove leading 0's from octet representation of IPv4 address
+		return preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
+	}
+
+	/**
+	 * Convert an IPv6 address into a verbose, uppercase, normalized form.
+	 * IPv6 addresses are expanded to 8 words.
+	 *
+	 * @param string $ip IP address in quad or octet form (CIDR or not).
+	 * @return string|null
+	 */
+	private static function sanitizeIPv6( $ip ) {
+		$ip = trim( $ip );
+		if ( $ip === '' ) {
+			return null;
 		}
 		// Remove any whitespaces, convert to upper case
 		$ip = strtoupper( $ip );
@@ -248,6 +252,31 @@ class IPUtils {
 		}
 		// Remove leading zeros from each bloc as needed
 		return preg_replace( '/(^|:)0+(' . self::RE_IPV6_WORD . ')/', '$1$2', $ip );
+	}
+
+	/**
+	 * Convert an IP into a verbose, uppercase, normalized form.
+	 * Both IPv4 and IPv6 addresses are trimmed. Additionally,
+	 * IPv6 addresses in octet notation are expanded to 8 words;
+	 * IPv4 addresses have leading zeros, in each octet, removed.
+	 *
+	 * @param string $ip IP address in quad or octet form (CIDR or not).
+	 * @return string|null
+	 */
+	public static function sanitizeIP( $ip ) {
+		if ( self::isIPv4( $ip ) ) {
+			return self::sanitizeIPv4( $ip );
+		}
+		if ( self::isIPv6( $ip ) ) {
+			return self::sanitizeIPv6( $ip );
+		}
+		// Compat: Returns null if empty/whitespace, or original (trimmed)
+		// input if not a valid IP.
+		$ip = trim( $ip );
+		if ( $ip === '' ) {
+			return null;
+		}
+		return $ip;
 	}
 
 	/**
@@ -479,7 +508,7 @@ class IPUtils {
 		} elseif ( self::isIPv4( $ip ) ) {
 			// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
 			// also double/triple 0 needs to be changed to just a single 0 for ip2long.
-			$ip = self::sanitizeIP( $ip );
+			$ip = self::sanitizeIPv4( $ip );
 			$n = ip2long( $ip );
 			if ( $n < 0 ) {
 				// We don't run code coverage on a 32-bit OS or Windows, so this will never be exercised
@@ -510,7 +539,7 @@ class IPUtils {
 	 * @return string|bool Pure hex (uppercase); false on failure
 	 */
 	private static function convertIPv6ToRawHex( $ip ) {
-		$ip = self::sanitizeIP( $ip );
+		$ip = self::sanitizeIPv6( $ip );
 		if ( !$ip ) {
 			return false;
 		}
@@ -631,7 +660,7 @@ class IPUtils {
 	 */
 	private static function parseCIDR6( $range ) {
 		// Explode into <expanded IP,range>
-		$parts = explode( '/', self::sanitizeIP( $range ), 2 );
+		$parts = explode( '/', self::sanitizeIPv6( $range ), 2 );
 		if ( count( $parts ) !== 2 ) {
 			return [ false, false ];
 		}
@@ -669,7 +698,7 @@ class IPUtils {
 	 */
 	private static function parseRange6( $range ) {
 		// Expand any IPv6 IP
-		$range = self::sanitizeIP( $range );
+		$range = self::sanitizeIPv6( $range );
 
 		$start = false;
 		$end = false;
