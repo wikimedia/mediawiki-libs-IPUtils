@@ -504,6 +504,7 @@ class IPUtils {
 	 */
 	public static function toHex( $ip ) {
 		if ( self::isIPv6( $ip ) ) {
+			$ip = self::sanitizeIPv6( $ip );
 			$n = 'v6-' . self::convertIPv6ToRawHex( $ip );
 		} elseif ( self::isIPv4( $ip ) ) {
 			// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
@@ -536,13 +537,9 @@ class IPUtils {
 	 * Given an IPv6 address in octet notation, returns a pure hex string.
 	 *
 	 * @param string $ip Octet ipv6 IP address.
-	 * @return string|bool Pure hex (uppercase); false on failure
+	 * @return string Pure hex (uppercase)
 	 */
 	private static function convertIPv6ToRawHex( $ip ) {
-		$ip = self::sanitizeIPv6( $ip );
-		if ( !$ip ) {
-			return false;
-		}
 		$r_ip = '';
 		foreach ( explode( ':', $ip ) as $v ) {
 			$r_ip .= str_pad( $v, 4, '0', STR_PAD_LEFT );
