@@ -532,25 +532,9 @@ class IPUtils {
 	public static function parseCIDR( $range ) {
 		if ( self::isIPv6( $range ) ) {
 			return self::parseCIDR6( $range );
-		}
-		$parts = explode( '/', $range, 2 );
-		if ( count( $parts ) !== 2 ) {
-			return [ false, false ];
-		}
-		[ $network, $bits ] = $parts;
-		$network = ip2long( $network );
-		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 32 ) {
-			$network &= ~( ( 1 << ( 32 - (int)$bits ) ) - 1 );
-			// Convert to unsigned
-			if ( $network < 0 ) {
-				$network += 2 ** 32;
-			}
 		} else {
-			$network = false;
-			$bits = false;
+			return self::parseCIDR4( $range );
 		}
-
-		return [ $network, $bits ];
 	}
 
 	/**
@@ -575,7 +559,7 @@ class IPUtils {
 			if ( self::isIPv6( $range ) ) {
 				return self::parseRange6( $range );
 			}
-			[ $network, $bits ] = self::parseCIDR( $range );
+			[ $network, $bits ] = self::parseCIDR4( $range );
 			if ( $network === false ) {
 				$start = $end = false;
 			} else {
@@ -606,6 +590,35 @@ class IPUtils {
 		}
 
 		return [ $start, $end ];
+	}
+
+	/**
+	 * Convert a network specification in IPv4 CIDR notation to an
+	 * integer network and a number of bits
+	 *
+	 * @param string $range
+	 *
+	 * @return array{int,int}|array{false,false}
+	 */
+	private static function parseCIDR4( $range ) {
+		$parts = explode( '/', $range, 2 );
+		if ( count( $parts ) !== 2 ) {
+			return [ false, false ];
+		}
+		[ $network, $bits ] = $parts;
+		$network = ip2long( $network );
+		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 32 ) {
+			$network &= ~( ( 1 << ( 32 - (int)$bits ) ) - 1 );
+			// Convert to unsigned
+			if ( $network < 0 ) {
+				$network += 2 ** 32;
+			}
+		} else {
+			$network = false;
+			$bits = false;
+		}
+
+		return [ $network, $bits ];
 	}
 
 	/**
