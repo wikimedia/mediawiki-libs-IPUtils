@@ -733,6 +733,24 @@ class IPUtils {
 	}
 
 	/**
+	 * Determine if a given IPv4/IPv6 address in hex format is in a given CIDR
+	 * network
+	 *
+	 * @param string $hexIP The address (as hex) to check against the given range.
+	 * @param string $range The range to check the given address against.
+	 * @return bool Whether or not the given address is in the given range.
+	 *
+	 * @note This can return unexpected results for invalid arguments!
+	 *       Make sure you pass a valid IP address and IP range.
+	 */
+	private static function isHexInRange( $hexIP, $range ) {
+		[ $start, $end ] = self::parseRange( $range );
+
+		return strcmp( $hexIP, $start ) >= 0 &&
+			strcmp( $hexIP, $end ) <= 0;
+	}
+
+	/**
 	 * Determine if a given IPv4/IPv6 address is in a given CIDR network
 	 *
 	 * @param string $addr The address to check against the given range.
@@ -744,10 +762,7 @@ class IPUtils {
 	 */
 	public static function isInRange( $addr, $range ) {
 		$hexIP = self::toHex( $addr );
-		[ $start, $end ] = self::parseRange( $range );
-
-		return strcmp( $hexIP, $start ) >= 0 &&
-			strcmp( $hexIP, $end ) <= 0;
+		return self::isHexInRange( $hexIP, $range );
 	}
 
 	/**
@@ -759,8 +774,9 @@ class IPUtils {
 	 * @return bool true if the specified adress belongs to the specified range; otherwise, false.
 	 */
 	public static function isInRanges( $ip, $ranges ) {
+		$hexIP = self::toHex( $ip );
 		foreach ( $ranges as $range ) {
-			if ( self::isInRange( $ip, $range ) ) {
+			if ( self::isHexInRange( $hexIP, $range ) ) {
 				return true;
 			}
 		}
