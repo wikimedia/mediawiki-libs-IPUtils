@@ -200,14 +200,15 @@ class IPUtils {
 		if ( $ip === '' ) {
 			return null;
 		}
-		// If not an IP, just return trimmed value, since sanitizeIP() is called
-		// in a number of contexts where usernames are supplied as input.
-		if ( !self::isIPAddress( $ip ) ) {
-			return $ip;
-		}
 		if ( self::isIPv4( $ip ) ) {
 			// Remove leading 0's from octet representation of IPv4 address
 			return preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
+		}
+		if ( !self::isIPv6( $ip ) ) {
+			// If it's not IPv4 or IPv6, it's not an IP. Just return trimmed
+			// value, since sanitizeIP() is called in a number of contexts
+			// where usernames are supplied as input.
+			return $ip;
 		}
 		// Remove any whitespaces, convert to upper case
 		$ip = strtoupper( $ip );
