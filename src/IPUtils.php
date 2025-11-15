@@ -492,6 +492,56 @@ class IPUtils {
 	}
 
 	/**
+	 * Return a zero-padded upper case hexadecimal representation of an IPv6
+	 * address.
+	 *
+	 * To separate the ranges, the return value from this function for an IPv6
+	 * address will be prefixed with "v6-", a non-hexadecimal string which
+	 * sorts after the IPv4 addresses.
+	 *
+	 * @param string $ip Quad dotted/octet IPv6 address.
+	 * @return string|bool False on failure
+	 */
+	private static function toHex6( $ip ) {
+		$ip = self::sanitizeIPv6( $ip );
+		if ( $ip === null ) {
+			return false;
+		}
+		return 'v6-' . self::convertIPv6ToRawHex( $ip );
+	}
+
+	/**
+	 * Return a zero-padded upper case hexadecimal representation of an IPv4
+	 * address.
+	 *
+	 * @param string $ip Quad dotted/octet IPv4 address.
+	 * @return string|bool False on failure
+	 */
+	private static function toHex4( $ip ) {
+		// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
+		// also double/triple 0 needs to be changed to just a single 0 for ip2long.
+		$ip = self::sanitizeIPv4( $ip );
+		if ( $ip === null ) {
+			return false;
+		}
+		$n = ip2long( $ip );
+		if ( $n < 0 ) {
+			// We don't run code coverage on a 32-bit OS or Windows, so this will never be exercised
+			// @codeCoverageIgnoreStart
+			$n += 2 ** 32;
+			// On 32-bit platforms (and on Windows), 2^32 does not fit into an int,
+			// so $n becomes a float. We convert it to string instead.
+			if ( is_float( $n ) ) {
+				$n = (string)$n;
+			}
+			// @codeCoverageIgnoreEnd
+		}
+		// Floating points can handle the conversion; faster than \Wikimedia\base_convert()
+		$n = strtoupper( str_pad( base_convert( $n, 10, 16 ), 8, '0', STR_PAD_LEFT ) );
+		return $n;
+	}
+
+	/**
 	 * Return a zero-padded upper case hexadecimal representation of an IP address.
 	 *
 	 * Hexadecimal addresses are used because they can easily be extended to
@@ -504,33 +554,11 @@ class IPUtils {
 	 */
 	public static function toHex( $ip ) {
 		if ( self::isIPv6( $ip ) ) {
-			$ip = self::sanitizeIPv6( $ip );
-			$n = 'v6-' . self::convertIPv6ToRawHex( $ip );
+			return self::toHex6( $ip );
 		} elseif ( self::isIPv4( $ip ) ) {
-			// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
-			// also double/triple 0 needs to be changed to just a single 0 for ip2long.
-			$ip = self::sanitizeIPv4( $ip );
-			$n = ip2long( $ip );
-			if ( $n < 0 ) {
-				// We don't run code coverage on a 32-bit OS or Windows, so this will never be exercised
-				// @codeCoverageIgnoreStart
-				$n += 2 ** 32;
-				// On 32-bit platforms (and on Windows), 2^32 does not fit into an int,
-				// so $n becomes a float. We convert it to string instead.
-				if ( is_float( $n ) ) {
-					$n = (string)$n;
-				}
-				// @codeCoverageIgnoreEnd
-			}
-			if ( $n !== false ) {
-				// Floating points can handle the conversion; faster than \Wikimedia\base_convert()
-				$n = strtoupper( str_pad( base_convert( $n, 10, 16 ), 8, '0', STR_PAD_LEFT ) );
-			}
-		} else {
-			$n = false;
+			return self::toHex4( $ip );
 		}
-
-		return $n;
+		return false;
 	}
 
 	/**
@@ -599,8 +627,8 @@ class IPUtils {
 				return self::parseRange6( $range );
 			}
 			if ( self::isIPv4( $start ) && self::isIPv4( $end ) ) {
-				$start = self::toHex( $start );
-				$end = self::toHex( $end );
+				$start = self::toHex4( $start );
+				$end = self::toHex4( $end );
 				if ( $start > $end ) {
 					$start = $end = false;
 				}
@@ -718,8 +746,8 @@ class IPUtils {
 		// Explicit range notation...
 		} elseif ( str_contains( $range, '-' ) ) {
 			[ $start, $end ] = array_map( 'trim', explode( '-', $range, 2 ) );
-			$start = self::toHex( $start );
-			$end = self::toHex( $end );
+			$start = self::toHex6( $start );
+			$end = self::toHex6( $end );
 			if ( $start > $end ) {
 				$start = $end = false;
 			}
