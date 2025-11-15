@@ -80,18 +80,6 @@ class IPUtils {
 	private const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
 
 	/**
-	 * This might be useful for regexps used elsewhere, matches any IPv4 or IPv6 address or network
-	 */
-	private const RE_IP_ADDRESS_STRING =
-		'(?:' .
-			// IPv4
-			self::RE_IP_ADD . '(?:\/' . self::RE_IP_PREFIX . ')?' .
-		'|' .
-			// IPv6
-			self::RE_IPV6_ADD . '(?:\/' . self::RE_IPV6_PREFIX . ')?' .
-		')';
-
-	/**
 	 * Maximum number of IP addresses that can be retrieved from a given range.
 	 */
 	private const MAXIMUM_IPS_FROM_RANGE = 2 ** 16;
@@ -105,7 +93,7 @@ class IPUtils {
 	 * @return bool
 	 */
 	public static function isIPAddress( $ip ) {
-		return (bool)preg_match( '/^' . self::RE_IP_ADDRESS_STRING . '$/', $ip );
+		return self::isIPv4( $ip ) || self::isIPv6( $ip );
 	}
 
 	/**
