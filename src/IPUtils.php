@@ -79,6 +79,11 @@ class IPUtils {
 
 	private const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
 
+	/** @var int IPv4 address family type */
+	private const AF_INET = 2;
+	/** @var int IPv6 address family type */
+	private const AF_INET6 = 30;
+
 	/**
 	 * Maximum number of IP addresses that can be retrieved from a given range.
 	 */
@@ -809,9 +814,27 @@ class IPUtils {
 	 * @return bool true if the specified address belongs to the specified range; otherwise, false.
 	 */
 	public static function isInRanges( $ip, $ranges ) {
-		$hexIP = self::toHex( $ip );
+		if ( self::isIPv6( $ip ) ) {
+			$hexIP = self::toHex6( $ip );
+			$family = self::AF_INET6;
+		} elseif ( self::isIPv4( $ip ) ) {
+			$hexIP = self::toHex4( $ip );
+			$family = self::AF_INET;
+		} else {
+			return false;
+		}
 		foreach ( $ranges as $range ) {
-			if ( self::isHexInRange( $hexIP, $range ) ) {
+			if ( $family === self::AF_INET6 ) {
+				if (
+					( self::isValidIPv6( $range ) || self::isValidIPv6Range( $range ) ) &&
+					self::isHexInRange( $hexIP, $range )
+				) {
+					return true;
+				}
+			} elseif (
+				( self::isValidIPv4( $range ) || self::isValidIPv4Range( $range ) ) &&
+				self::isHexInRange( $hexIP, $range )
+			) {
 				return true;
 			}
 		}
