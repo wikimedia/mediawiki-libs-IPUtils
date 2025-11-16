@@ -722,9 +722,6 @@ class IPUtils {
 	 * is invalid, then array [false, false] is returned
 	 */
 	private static function parseRange6( $range ) {
-		// Expand any IPv6 IP
-		$range = self::sanitizeIPv6( $range );
-
 		$start = false;
 		$end = false;
 
@@ -745,7 +742,7 @@ class IPUtils {
 			}
 		// Explicit range notation...
 		} elseif ( str_contains( $range, '-' ) ) {
-			[ $start, $end ] = array_map( 'trim', explode( '-', $range, 2 ) );
+			[ $start, $end ] = explode( '-', $range, 2 );
 			$start = self::toHex6( $start );
 			$end = self::toHex6( $end );
 			if ( $start > $end ) {
