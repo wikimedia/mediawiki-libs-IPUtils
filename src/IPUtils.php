@@ -76,7 +76,7 @@ class IPUtils {
 	 * For IPv6 canonicalization (NOT for strict validation; these are quite lax!)
 	 */
 	public const RE_IPV6_GAP = ':(?:0+:)*(?::(?:0+:)*)?';
-	/** @private */
+
 	private const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
 
 	/**
@@ -85,8 +85,10 @@ class IPUtils {
 	private const MAXIMUM_IPS_FROM_RANGE = 2 ** 16;
 
 	/**
-	 * Determine if a string is as valid IP address or network (CIDR prefix).
+	 * Determine if a string is a valid IP address or network (CIDR prefix).
+	 *
 	 * SIIT IPv4-translated addresses are rejected.
+	 *
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
 	 * @param string $ip Possible IP address
@@ -97,7 +99,8 @@ class IPUtils {
 	}
 
 	/**
-	 * Given a string, determine if it as valid IP in IPv6 only.
+	 * Given a string, determine if it is a valid IP address in IPv6 only.
+	 *
 	 * @note Unlike isValid(), this looks for networks too.
 	 *
 	 * @param string $ip Possible IP address
@@ -108,7 +111,8 @@ class IPUtils {
 	}
 
 	/**
-	 * Given a string, determine if it as valid IP in IPv4 only.
+	 * Given a string, determine if it is a valid IP address in IPv4 only.
+	 *
 	 * @note Unlike isValid(), this looks for networks too.
 	 *
 	 * @param string $ip Possible IP address
@@ -120,7 +124,9 @@ class IPUtils {
 
 	/**
 	 * Validate an IP address. Ranges are NOT considered valid.
+	 *
 	 * SIIT IPv4-translated addresses are rejected.
+	 *
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
 	 * @param string $ip
@@ -143,7 +149,9 @@ class IPUtils {
 
 	/**
 	 * Validate an IPv6 address. Ranges are NOT considered valid.
+	 *
 	 * SIIT IPv4-translated addresses are rejected.
+	 *
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
 	 * @param string $ip
@@ -175,7 +183,9 @@ class IPUtils {
 
 	/**
 	 * Validate an IP range (valid in either IPv4 OR IPv6; given with valid CIDR prefix or in explicit notation).
+	 *
 	 * SIIT IPv4-translated addresses are rejected.
+	 *
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
 	 * @param string $ipRange
@@ -198,7 +208,7 @@ class IPUtils {
 		if ( $ip === '' ) {
 			return null;
 		}
-		// Remove leading 0's from octet representation of IPv4 address
+		// Remove leading 0's from an octet representation of IPv4 address
 		return preg_replace( '!(?:^|(?<=\.))0+(?=[1-9]|0[./]|0$)!', '', $ip );
 	}
 
@@ -214,7 +224,7 @@ class IPUtils {
 		if ( $ip === '' ) {
 			return null;
 		}
-		// Remove any whitespaces, convert to upper case
+		// Remove any whitespaces, convert characters to uppercase
 		$ip = strtoupper( $ip );
 		// Expand zero abbreviations
 		$abbrevPos = strpos( $ip, '::' );
@@ -281,6 +291,7 @@ class IPUtils {
 
 	/**
 	 * Prettify an IP for display to end users.
+	 *
 	 * This will make it more compact and lower-case.
 	 *
 	 * @param string $ip
@@ -384,7 +395,7 @@ class IPUtils {
 	}
 
 	/**
-	 * Given a host name and a port, combine them into host/port string like
+	 * Given a host name and a port, combine them into a host/port string like
 	 * you might find in a URL. If the host contains a colon, wrap it in square
 	 * brackets like in RFC 2732. If the port matches the default port, omit
 	 * the port specification
@@ -537,8 +548,7 @@ class IPUtils {
 			// @codeCoverageIgnoreEnd
 		}
 		// Floating points can handle the conversion; faster than \Wikimedia\base_convert()
-		$n = strtoupper( str_pad( base_convert( $n, 10, 16 ), 8, '0', STR_PAD_LEFT ) );
-		return $n;
+		return strtoupper( str_pad( base_convert( $n, 10, 16 ), 8, '0', STR_PAD_LEFT ) );
 	}
 
 	/**
@@ -608,8 +618,8 @@ class IPUtils {
 	 * is invalid, then array `[false, false]` is returned
 	 */
 	public static function parseRange( $range ) {
-		// CIDR notation
 		if ( str_contains( $range, '/' ) ) {
+			// CIDR notation
 			if ( self::isIPv6( $range ) ) {
 				return self::parseRange6( $range );
 			}
@@ -620,8 +630,8 @@ class IPUtils {
 				$start = sprintf( '%08X', $network );
 				$end = sprintf( '%08X', $network + 2 ** ( 32 - $bits ) - 1 );
 			}
-		// Explicit range
 		} elseif ( str_contains( $range, '-' ) ) {
+			// Explicit range
 			[ $start, $end ] = array_map( 'trim', explode( '-', $range, 2 ) );
 			if ( self::isIPv6( $start ) && self::isIPv6( $end ) ) {
 				return self::parseRange6( $range );
@@ -692,7 +702,7 @@ class IPUtils {
 		[ $network, $bits ] = $parts;
 		$network = self::convertIPv6ToRawHex( $network );
 		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 128 ) {
-			// Native 32 bit functions WONT work here!!!
+			// Native 32-bit functions WON'T work here!!!
 			// Convert to a padded binary number
 			$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
 			// Truncate the last (128-$bits) bits and replace them with zeros
@@ -725,8 +735,8 @@ class IPUtils {
 		$start = false;
 		$end = false;
 
-		// CIDR notation...
 		if ( str_contains( $range, '/' ) ) {
+			// CIDR notation...
 			[ $network, $bits ] = self::parseCIDR6( $range );
 			if ( $network !== false ) {
 				$start = \Wikimedia\base_convert( $network, 10, 16, 32, false );
@@ -740,8 +750,8 @@ class IPUtils {
 				$start = "v6-$start";
 				$end = "v6-$end";
 			}
-		// Explicit range notation...
 		} elseif ( str_contains( $range, '-' ) ) {
+			// Explicit range notation...
 			[ $start, $end ] = explode( '-', $range, 2 );
 			$start = self::toHex6( $start );
 			$end = self::toHex6( $end );
@@ -763,7 +773,7 @@ class IPUtils {
 	 *
 	 * @param string $hexIP The address (as hex) to check against the given range.
 	 * @param string $range The range to check the given address against.
-	 * @return bool Whether or not the given address is in the given range.
+	 * @return bool Whether the given address is in the given range.
 	 *
 	 * @note This can return unexpected results for invalid arguments!
 	 *       Make sure you pass a valid IP address and IP range.
@@ -780,7 +790,7 @@ class IPUtils {
 	 *
 	 * @param string $addr The address to check against the given range.
 	 * @param string $range The range to check the given address against.
-	 * @return bool Whether or not the given address is in the given range.
+	 * @return bool Whether the given address is in the given range.
 	 *
 	 * @note This can return unexpected results for invalid arguments!
 	 *       Make sure you pass a valid IP address and IP range.
@@ -796,7 +806,7 @@ class IPUtils {
 	 * @param string $ip the IP to check
 	 * @param array $ranges the IP ranges, each element a range
 	 *
-	 * @return bool true if the specified adress belongs to the specified range; otherwise, false.
+	 * @return bool true if the specified address belongs to the specified range; otherwise, false.
 	 */
 	public static function isInRanges( $ip, $ranges ) {
 		$hexIP = self::toHex( $ip );
@@ -865,7 +875,7 @@ class IPUtils {
 		[ $start, ] = self::parseRange( $range );
 		$start = self::formatHex( $start );
 		if ( $bits === false ) {
-			// wasn't actually a range
+			// input wasn't a range
 			return $start;
 		}
 
@@ -899,7 +909,7 @@ class IPUtils {
 	 * @param string $range IP ranges to get the IPs within
 	 * @return string[] Array of addresses in the range
 	 * @throws InvalidArgumentException If input uses IPv6
-	 * @throws InvalidArgumentException If input range is too large
+	 * @throws InvalidArgumentException If the input range is too large
 	 */
 	public static function getIPsInRange( $range ): array {
 		// No IPv6 for now.
