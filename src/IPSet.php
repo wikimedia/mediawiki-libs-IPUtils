@@ -84,10 +84,10 @@ use JsonSerializable;
  */
 class IPSet implements JsonSerializable {
 	/** @var array|bool The root of the IPv4 matching tree */
-	private $root4 = false;
+	private array|bool $root4 = false;
 
 	/** @var array|bool The root of the IPv6 matching tree */
-	private $root6 = false;
+	private array|bool $root6 = false;
 
 	/**
 	 * Instantiate the object from an array of CIDR specs
@@ -109,7 +109,7 @@ class IPSet implements JsonSerializable {
 	 * @param string $cidr String CIDR spec, IPv[46], optional /mask (def all-1's)
 	 * @return bool Returns true on success, false on failure
 	 */
-	private function addCidr( $cidr ): bool {
+	private function addCidr( string $cidr ): bool {
 		// v4 or v6 check
 		if ( !str_contains( $cidr, ':' ) ) {
 			$node =& $this->root4;
@@ -206,7 +206,7 @@ class IPSet implements JsonSerializable {
 	 * @param string $ip string IPv[46] address
 	 * @return bool True is match success, false is match failure
 	 */
-	public function match( $ip ): bool {
+	public function match( string $ip ): bool {
 		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		$raw = @inet_pton( $ip );
 		if ( $raw === false ) {
@@ -240,11 +240,6 @@ class IPSet implements JsonSerializable {
 		return $node;
 	}
 
-	/**
-	 * @param string $json
-	 *
-	 * @return IPSet
-	 */
 	public static function newFromJson( string $json ): IPSet {
 		$ipset = new IPSet( [] );
 		$decoded = json_decode( $json, true );
