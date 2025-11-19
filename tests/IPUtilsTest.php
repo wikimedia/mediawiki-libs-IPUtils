@@ -607,6 +607,75 @@ class IPUtilsTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider provideIPsAndSingleRange
+	 */
+	public function testIsInRange( $expected, $addr, $range, $message = '' ): void {
+		$this->assertEquals(
+			$expected,
+			IPUtils::isInRange( $addr, $range ),
+			$message
+		);
+	}
+
+	public static function provideIPsAndSingleRange(): array {
+		// Format: (expected boolean, address, range, optional message)
+		return [
+			// IPv4 CIDR ranges
+			[ true, '192.0.2.0', '192.0.2.0/24', 'IPv4 network address in CIDR range' ],
+			[ true, '192.0.2.77', '192.0.2.0/24', 'IPv4 simple address in CIDR range' ],
+			[ true, '192.0.2.255', '192.0.2.0/24', 'IPv4 broadcast address in CIDR range' ],
+			[ false, '192.0.3.1', '192.0.2.0/24', 'IPv4 address outside CIDR range' ],
+			[ true, '10.0.0.1', '10.0.0.0/8', 'IPv4 private address in CIDR range' ],
+			[ false, '11.0.0.1', '10.0.0.0/8', 'IPv4 address outside private CIDR range' ],
+			[ true, '172.16.0.1', '172.16.0.0/12', 'IPv4 private address in CIDR range' ],
+			[ true, '192.168.0.1', '192.168.0.0/16', 'IPv4 private address in CIDR range' ],
+
+			// IPv4 hyphenated ranges
+			[ true, '192.0.2.1', '192.0.2.0-192.0.2.255', 'IPv4 simple address in hyphenated range' ],
+			[ true, '192.0.2.0', '192.0.2.0-192.0.2.255', 'IPv4 start of hyphenated range' ],
+			[ true, '192.0.2.255', '192.0.2.0-192.0.2.255', 'IPv4 end of hyphenated range' ],
+			[ false, '192.0.3.0', '192.0.2.0-192.0.2.255', 'IPv4 address outside hyphenated range' ],
+
+			// IPv6 CIDR ranges
+			[ true, '2001:DB8::', '2001:DB8::/32', 'IPv6 network address in CIDR range' ],
+			[ true, '2001:0DB8::', '2001:DB8::/32', 'IPv6 zero-padded network address in CIDR range' ],
+			[ true, '2001:DB8::1', '2001:DB8::/32', 'IPv6 simple address in CIDR range' ],
+			[ true, '2001:0DB8::1', '2001:DB8::/32', 'IPv6 zero-padded simple address in CIDR range' ],
+			[ true, '2001:0DB8:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', '2001:DB8::/32',
+				'IPv6 broadcast address in CIDR range' ],
+			[ false, '2001:DB9::', '2001:DB8::/32', 'IPv6 address outside CIDR range' ],
+			[ false, '::1', '2001:DB8::/32', 'IPv6 loopback outside CIDR range' ],
+			[ false, 'FE80::1', '2001:DB8::/32', 'IPv6 link-local outside CIDR range' ],
+			[ true, 'fc00::1', 'fc00::/7', 'IPv6 private address in CIDR range' ],
+
+			// IPv6 hyphenated ranges
+			[ true, '2001:DB8::1', '2001:DB8::0-2001:DB8::FFFF', 'IPv6 simple address in hyphenated range' ],
+			[ true, '2001:DB8::0', '2001:DB8::0-2001:DB8::FFFF', 'IPv6 start of hyphenated range' ],
+			[ true, '2001:DB8::FFFF', '2001:DB8::0-2001:DB8::FFFF', 'IPv6 end of hyphenated range' ],
+			[ false, '2001:DB8:1::', '2001:DB8::0-2001:DB8::FFFF', 'IPv6 address outside hyphenated range' ],
+
+			// Single IP (treated as a /32 or /128 range)
+			[ true, '192.168.1.1', '192.168.1.1', 'Single IPv4 address matching itself' ],
+			[ false, '192.168.1.2', '192.168.1.1', 'Single IPv4 address not matching itself' ],
+			[ true, '2001:db8::1', '2001:db8::1', 'Single IPv6 address matching itself' ],
+			[ false, '2001:db8::2', '2001:db8::1', 'Single IPv6 address not matching itself' ],
+
+			// Invalid inputs
+			[ false, 'invalid-ip', '192.0.2.0/24', 'Invalid IP address format' ],
+			[ false, '192.0.2.1', 'invalid-range', 'Invalid range format' ],
+			[ false, '192.0.2.1', '192.0.2.0/33', 'Invalid IPv4 CIDR prefix (too large)' ],
+			[ false, '2001:db8::1', '2001:db8::/129', 'Invalid IPv6 CIDR prefix (too large)' ],
+			[ false, '192.0.2.1', '192.0.2.1-192.0.2.0', 'Invalid hyphenated range (start > end)' ],
+			[ false, '2001:db8::1', '2001:db8::1-2001:db8::0', 'Invalid IPv6 hyphenated range (start > end)' ],
+			[ false, '192.0.2.1', '', 'Empty range string' ],
+			[ false, '', '192.0.2.0/24', 'Empty IP address string' ],
+			[ false, '192.0.2.1', false, 'Boolean false as range' ],
+			[ false, '192.0.2.1', '2001:db8::/32', 'IPv4 address should not be in IPv6 range' ],
+			[ false, '2001:db8::1', '192.0.2.0/24', 'IPv6 address should not be in IPv4 range' ],
+		];
+	}
+
+	/**
 	 * @dataProvider provideSplitHostAndPort
 	 */
 	public function testSplitHostAndPort( $expected, $input, $description ): void {
