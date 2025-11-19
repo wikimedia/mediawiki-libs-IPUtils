@@ -701,7 +701,7 @@ class IPUtils {
 		}
 		[ $network, $bits ] = $parts;
 		$network = self::convertIPv6ToRawHex( $network );
-		if ( $network !== false && is_numeric( $bits ) && $bits >= 0 && $bits <= 128 ) {
+		if ( is_numeric( $bits ) && $bits >= 0 && $bits <= 128 ) {
 			// Native 32-bit functions WON'T work here!!!
 			// Convert to a padded binary number
 			$network = \Wikimedia\base_convert( $network, 16, 2, 128 );
