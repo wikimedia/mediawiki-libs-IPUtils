@@ -43,6 +43,14 @@ class IPUtilsTest extends TestCase {
 		];
 	}
 
+	/**
+	 * @dataProvider provideSixToFourMapping
+	 */
+	public function testIsIPAddress_sixToFour( $input ): void {
+		// reject SIIT IPv4-translation
+		$this->assertFalse( IPUtils::isIPAddress( $input ) );
+	}
+
 	public function testisIPAddress(): void {
 		$this->assertTrue( IPUtils::isIPAddress( '::' ), 'RFC 4291 IPv6 Unspecified Address' );
 		$this->assertTrue( IPUtils::isIPAddress( '::1' ), 'RFC 4291 IPv6 Loopback Address' );
@@ -118,6 +126,14 @@ class IPUtilsTest extends TestCase {
 		$this->assertFalse( IPUtils::isIPv6( 'fc::100:a:d:1:e:ac:0:1' ), 'IPv6 with 9 words' );
 
 		$this->assertTrue( IPUtils::isIPv6( 'fc:100:a:d:1:e:ac:0' ) );
+	}
+
+	/**
+	 * @dataProvider provideSixToFourMapping
+	 */
+	public function testIsIPv6_sixToFour( $input ): void {
+		// reject SIIT IPv4-translation
+		$this->assertFalse( IPUtils::isIPv6( $input ) );
 	}
 
 	/**
@@ -254,11 +270,13 @@ class IPUtilsTest extends TestCase {
 		}
 	}
 
-	/**
-	 * Provide some valid IP ranges
-	 */
 	public static function provideValidRanges(): array {
 		return [
+			[ '198.18.0.0/16' ],
+			[ '198.18.0.0-198.18.255.255' ],
+			[ '::1/128' ],
+			[ '2001:db8:1:2::/64' ],
+			[ '2001:DB8:85A3:0:0:8A2E:370:7334-2001:DB8:85A3:8A2E:370:7334:0:0' ],
 			[ '116.17.184.5/32' ],
 			[ '116.17.184.5-116.17.184.5' ],
 			[ '0.17.184.5/30' ],
@@ -292,14 +310,15 @@ class IPUtilsTest extends TestCase {
 	 * @dataProvider provideValidRanges
 	 */
 	public function testValidRanges( $range ): void {
-		$this->assertTrue( IPUtils::isValidRange( $range ), "$range is a valid IP range" );
+		$this->assertTrue( IPUtils::isValidRange( $range ) );
 	}
 
 	/**
 	 * @dataProvider provideInvalidRanges
+	 * @dataProvider provideSixToFourMapping
 	 */
 	public function testInvalidRanges( $invalid ): void {
-		$this->assertFalse( IPUtils::isValidRange( $invalid ), "$invalid is not a valid IP range" );
+		$this->assertFalse( IPUtils::isValidRange( $invalid ) );
 	}
 
 	public static function provideInvalidRanges(): array {
@@ -521,25 +540,6 @@ class IPUtilsTest extends TestCase {
 			'Canonicalization of a valid IPv4 address returns it unchanged'
 		);
 
-		// Example IP from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
-		$this->assertEquals(
-			'192.0.2.128',
-			IPUtils::canonicalize( '::FFFF:192.0.2.128' ),
-			'Canonicalization of IPv4-mapped addresses'
-		);
-
-		// Example IP from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
-		$this->assertEquals(
-			'192.0.2.128',
-			IPUtils::canonicalize( '::192.0.2.128' ),
-			'Canonicalization of IPv4-compatible IPv6 addresses'
-		);
-
-		$this->assertEquals(
-			'255.255.0.31',
-			IPUtils::canonicalize( ':ffff:1F' )
-		);
-
 		$this->assertEquals(
 			'2001:db8:85a3::8a2e:370:7334',
 			IPUtils::canonicalize( '2001:db8:85a3::8a2e:370:7334' ),
@@ -563,6 +563,26 @@ class IPUtilsTest extends TestCase {
 		$this->assertNull(
 			IPUtils::canonicalize( '' ),
 			'Canonicalization of an invalid IP returns null'
+		);
+	}
+
+	public static function provideSixToFourMapping() {
+		// Example from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+		yield 'New IPv4-mapped format' => [ '::FFFF:192.0.2.128', '192.0.2.128' ];
+
+		// Example from https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+		yield 'Old IPv4-compatible format' => [ '::192.0.2.128', '192.0.2.128' ];
+
+		yield 'SIIT IPv4-translated example' => [ ':ffff:1F', '255.255.0.31' ];
+	}
+
+	/**
+	 * @dataProvider provideSixToFourMapping
+	 */
+	public function testCanonicalize_sixToFour( $input, $expected ): void {
+		$this->assertEquals(
+			$expected,
+			IPUtils::canonicalize( $input ),
 		);
 	}
 
@@ -659,6 +679,10 @@ class IPUtilsTest extends TestCase {
 			[ false, '192.168.1.2', '192.168.1.1', 'Single IPv4 address not matching itself' ],
 			[ true, '2001:db8::1', '2001:db8::1', 'Single IPv6 address matching itself' ],
 			[ false, '2001:db8::2', '2001:db8::1', 'Single IPv6 address not matching itself' ],
+			[ true, '141.0.11.253', '141.000.011.253', 'IPv4 sanitized matches unsanitized self' ],
+			[ true, '141.000.011.253', '141.0.11.253', 'IPv4 unsanitized matches sanitized self' ],
+			[ true, 'cebc:2004:f:0:0:0:0:0', 'cebc:2004:f::', 'IPv6 long matches pretty self' ],
+			[ true, 'cebc:2004:f::', 'cebc:2004:f:0:0:0:0:0', 'IPv6 pretty matches long self' ],
 
 			// Invalid inputs
 			[ false, 'invalid-ip', '192.0.2.0/24', 'Invalid IP address format' ],

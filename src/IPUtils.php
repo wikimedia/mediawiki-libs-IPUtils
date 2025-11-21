@@ -79,11 +79,6 @@ class IPUtils {
 
 	private const RE_IPV6_V4_PREFIX = '0*' . self::RE_IPV6_GAP . '(?:ffff:)?';
 
-	/** @var int IPv4 address family type */
-	private const AF_INET = 2;
-	/** @var int IPv6 address family type */
-	private const AF_INET6 = 30;
-
 	/**
 	 * Maximum number of IP addresses that can be retrieved from a given range.
 	 */
@@ -167,9 +162,10 @@ class IPUtils {
 	}
 
 	/**
-	 * Validate an IPv4 range (valid IPv4 address with a valid CIDR prefix or explicit range).
+	 * Validate an IPv4 range or single address.
 	 *
-	 * @param string $ipRange
+	 * @param string $ipRange Single address, or CIDR range like "198.18.0.0/16", or
+	 *  explicit range like "198.18.0.0-198.18.255.255".
 	 * @return bool True if input is valid
 	 */
 	private static function isValidIPv4Range( $ipRange ) {
@@ -177,9 +173,10 @@ class IPUtils {
 	}
 
 	/**
-	 * Validate an IPv6 range (valid IPv6 address with a valid CIDR prefix or explicit range).
+	 * Validate an IPv6 range or single address.
 	 *
-	 * @param string $ipRange
+	 * @param string $ipRange Single address, or CIDR range like "2001:db8:1:2::/64", or
+	 *  explicit range like "2001:DB8:85A3:0:0:8A2E:370:7334-2001:DB8:85A3:8A2E:370:7334:0:0".
 	 * @return bool True if input is valid
 	 */
 	private static function isValidIPv6Range( $ipRange ) {
@@ -187,9 +184,15 @@ class IPUtils {
 	}
 
 	/**
-	 * Validate an IP range (valid in either IPv4 OR IPv6; given with valid CIDR prefix or in explicit notation).
+	 * Validate an IPv4 or IPv6 range or single address.
 	 *
-	 * SIIT IPv4-translated addresses are rejected.
+	 * This accepts:
+	 * - CIDR range like "198.18.0.0/16" or "2001:db8:1:2::/64"
+	 * - explicit range like "198.18.0.0-198.18.255.255" or
+	 *   "2001:DB8:85A3:0:0:8A2E:370:7334-2001:DB8:85A3:8A2E:370:7334:0:0"
+	 * - single address
+	 *
+	 * Note that SIIT IPv4-translated addresses are rejected.
 	 *
 	 * @note canonicalize() tries to convert translated addresses to IPv4.
 	 *
@@ -197,7 +200,7 @@ class IPUtils {
 	 * @return bool True if it is valid
 	 */
 	public static function isValidRange( $ipRange ) {
-		// Test IPv4 before IPv6 as it's more common.
+		// Optimization: Check IPv4 before IPv6 as it's more common.
 		return self::isValidIPv4Range( $ipRange ) || self::isValidIPv6Range( $ipRange );
 	}
 
@@ -791,10 +794,11 @@ class IPUtils {
 	}
 
 	/**
-	 * Determine if a given IPv4/IPv6 address is in a given CIDR network
+	 * Determine if a given IP address matches a given IP range or single address.
 	 *
 	 * @param string $addr The address to check against the given range.
-	 * @param string $range The range to check the given address against.
+	 * @param string $range A CIDR range, explicit range, or single address.
+	 *  See IPUtils::isValidRange for examples.
 	 * @return bool Whether the given address is in the given range.
 	 *
 	 * @note This can return unexpected results for invalid arguments!
@@ -806,36 +810,33 @@ class IPUtils {
 	}
 
 	/**
-	 * Determines if an IP address is a list of CIDR a.b.c.d/n ranges.
+	 * Determine if an IP address is in a list of IP ranges or addresses.
 	 *
-	 * @param string $ip the IP to check
-	 * @param array $ranges the IP ranges, each element a range
-	 *
-	 * @return bool true if the specified address belongs to the specified range; otherwise, false.
+	 * @param string $ip The IP to check
+	 * @param string[] $ranges The list to check against, where each value should be
+	 *  a CIDR range, explicit range, or single address. See IPUtils::isValidRange for examples.
+	 * @return bool True if the specified address belongs to the specified range, otherwise false.
 	 */
 	public static function isInRanges( $ip, $ranges ) {
 		if ( self::isIPv6( $ip ) ) {
 			$hexIP = self::toHex6( $ip );
-			$family = self::AF_INET6;
-		} elseif ( self::isIPv4( $ip ) ) {
-			$hexIP = self::toHex4( $ip );
-			$family = self::AF_INET;
-		} else {
-			return false;
-		}
-		foreach ( $ranges as $range ) {
-			if ( $family === self::AF_INET6 ) {
+			foreach ( $ranges as $range ) {
 				if (
 					( self::isValidIPv6( $range ) || self::isValidIPv6Range( $range ) ) &&
 					self::isHexInRange( $hexIP, $range )
 				) {
 					return true;
 				}
-			} elseif (
-				( self::isValidIPv4( $range ) || self::isValidIPv4Range( $range ) ) &&
-				self::isHexInRange( $hexIP, $range )
-			) {
-				return true;
+			}
+		} elseif ( self::isIPv4( $ip ) ) {
+			$hexIP = self::toHex4( $ip );
+			foreach ( $ranges as $range ) {
+				if (
+					( self::isValidIPv4( $range ) || self::isValidIPv4Range( $range ) ) &&
+					self::isHexInRange( $hexIP, $range )
+				) {
+					return true;
+				}
 			}
 		}
 		return false;
