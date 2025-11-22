@@ -943,6 +943,8 @@ class IPUtilsTest extends TestCase {
 		return [
 			[ '127.0.0.1', '127.0.0' ],
 			[ '::6d:f:2001', 'v6-00000000000000000000000000000000' ],
+			// Invalid
+			'IPv4 out of range' => [ '24.324.52.13', false ],
 		];
 	}
 
