@@ -9,6 +9,8 @@
 namespace Wikimedia;
 
 use JsonSerializable;
+use function ord;
+use function strlen;
 
 /**
  * Matches IP addresses against a set of CIDR specifications
@@ -119,19 +121,19 @@ class IPSet implements JsonSerializable {
 		// explicit integer convert, checked above
 		$mask = (int)$mask;
 
-		// convert $net to an array of integer bytes, length 4 or 16
 		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		$raw = @inet_pton( $net );
 		if ( $raw === false ) {
 			return false;
 		}
-		$rawOrd = array_map( 'ord', str_split( $raw ) );
 
 		// iterate the bits of the address while walking the tree structure for inserts
 		// at the end, $snode will point to the highest node that could only lead to a
 		// successful match (and thus can be set to true)
 		$snode =& $node;
 		$curBit = 0;
+		$lastByteIndex = -1;
+		$byteOrd = 0;
 		while ( 1 ) {
 			if ( $node === true ) {
 				// already added a larger supernet, no need to go deeper
@@ -144,10 +146,16 @@ class IPSet implements JsonSerializable {
 				return true;
 			}
 
+			$byteIndex = $curBit >> 3;
+			if ( $byteIndex !== $lastByteIndex ) {
+				$byteOrd = ord( $raw[$byteIndex] );
+				$lastByteIndex = $byteIndex;
+			}
+
 			if ( $node === false ) {
 				// create new subarray to go deeper
 				if ( !( $curBit & 7 ) && $curBit <= $mask - 8 ) {
-					$node = [ 'comp' => $rawOrd[$curBit >> 3], 'next' => false ];
+					$node = [ 'comp' => $byteOrd, 'next' => false ];
 				} else {
 					$node = [ false, false ];
 				}
@@ -155,7 +163,7 @@ class IPSet implements JsonSerializable {
 
 			if ( isset( $node['comp'] ) ) {
 				$comp = $node['comp'];
-				if ( $rawOrd[$curBit >> 3] === $comp && $curBit <= $mask - 8 ) {
+				if ( $byteOrd === $comp && $curBit <= $mask - 8 ) {
 					// whole byte matches, skip over the compressed node
 					$node =& $node['next'];
 					$snode =& $node;
@@ -174,7 +182,7 @@ class IPSet implements JsonSerializable {
 			}
 
 			$maskShift = 7 - ( $curBit & 7 );
-			$index = ( $rawOrd[$curBit >> 3] & ( 1 << $maskShift ) ) >> $maskShift;
+			$index = ( $byteOrd >> $maskShift ) & 1;
 			if ( $node[$index ^ 1] !== true ) {
 				// no adjacent subnet, can't form a supernet at this level
 				$snode =& $node[$index];
@@ -199,18 +207,24 @@ class IPSet implements JsonSerializable {
 			return false;
 		}
 
-		$rawOrd = array_map( 'ord', str_split( $raw ) );
-		if ( count( $rawOrd ) === 4 ) {
+		if ( strlen( $raw ) === 4 ) {
 			$node =& $this->root4;
 		} else {
 			$node =& $this->root6;
 		}
 
 		$curBit = 0;
+		$lastByteIndex = -1;
+		$byteOrd = 0;
 		while ( $node !== true && $node !== false ) {
+			$byteIndex = $curBit >> 3;
+			if ( $byteIndex !== $lastByteIndex ) {
+				$byteOrd = ord( $raw[$byteIndex] );
+				$lastByteIndex = $byteIndex;
+			}
 			if ( isset( $node['comp'] ) ) {
 				// compressed node, matches 1 whole byte on a byte boundary
-				if ( $rawOrd[$curBit >> 3] !== $node['comp'] ) {
+				if ( $byteOrd !== $node['comp'] ) {
 					return false;
 				}
 				$curBit += 8;
@@ -218,7 +232,7 @@ class IPSet implements JsonSerializable {
 			} else {
 				// uncompressed node, walk in the correct direction for the current bit-value
 				$maskShift = 7 - ( $curBit & 7 );
-				$node =& $node[( $rawOrd[$curBit >> 3] & ( 1 << $maskShift ) ) >> $maskShift];
+				$node =& $node[( $byteOrd >> $maskShift ) & 1];
 				++$curBit;
 			}
 		}
