@@ -6,7 +6,7 @@ require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
 use Wikimedia\IPUtils;
 
-$softBlockRanges = require __DIR__ . '/softBlockRanges.php';
+$softBlockRanges = require __DIR__ . '/data/softBlockRanges.php';
 
 $iterations = 1000;
 
@@ -26,4 +26,4 @@ $endTime = hrtime( true );
 $totalTimeMs = ( $endTime - $startTime ) / 1_000_000;
 $avgTimeMs = $totalTimeMs / $iterations;
 
-echo "Average time: " . sprintf( '%.3f', $avgTimeMs ) . " ms\n";
+echo "IPUtils::isInRanges(): " . sprintf( '%.3f', $avgTimeMs ) . " ms\n";

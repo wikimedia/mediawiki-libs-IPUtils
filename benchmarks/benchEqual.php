@@ -1,4 +1,7 @@
 <?php
+// Benchmark various ways to check if two IPs are equal.
+// See <https://gerrit.wikimedia.org/r/c/mediawiki/libs/IPUtils/+/1208413>
+
 require_once dirname( __DIR__ ) . '/src/IPUtils.php';
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
