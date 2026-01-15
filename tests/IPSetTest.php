@@ -355,4 +355,18 @@ class IPSetTest extends TestCase {
 		$this->assertTrue( $ipset->match( '127.0.0.1' ) );
 		$this->assertFalse( $ipset->match( '10.0.0.1' ) );
 	}
+
+	public function testValidateBenchmark(): void {
+		$hostInput = require __DIR__ . '/benchmarks/data/trusted-hosts.php';
+		$hostExpandedState = file_get_contents( __DIR__ . '/benchmarks/data/trusted-hosts.json' );
+
+		$ipsetPHP = new IPSet( $hostInput );
+		$ipsetJSON = IPSet::newFromJson( $hostExpandedState );
+
+		$this->assertTrue( $ipsetPHP->match( '69.63.176.1' ) );
+		$this->assertTrue( $ipsetJSON->match( '69.63.176.1' ) );
+
+		$this->assertFalse( $ipsetPHP->match( '127.0.0.1' ) );
+		$this->assertFalse( $ipsetJSON->match( '127.0.0.1' ) );
+	}
 }

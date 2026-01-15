@@ -37,7 +37,12 @@
 			"@phan",
 			"minus-x check ."
 		],
-		"bench": "php benchmarks/benchIPSetLoading.php",
+		"bench": [
+			"php -r 'print \"PHP \" . PHP_VERSION . PHP_EOL;'",
+			"php tests/benchmarks/benchIPSetLoading.php",
+			"php tests/benchmarks/benchIPSetNew.php",
+			"php tests/benchmarks/benchIsInRanges.php"
+		],
 		"changelog": "git log --format='* %s (%aN)' --no-merges --reverse $(git describe --tags --abbrev=0 HEAD)...HEAD | sort | grep -vE '^\\* (build|docs?|tests?):'",
 		"cover": "phpunit --coverage-html coverage",
 		"fix": [
