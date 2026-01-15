@@ -226,11 +226,11 @@ class IPSet implements JsonSerializable {
 		return $node;
 	}
 
-	public static function newFromJson( string $json ): IPSet {
+	public static function newFromJson( string $jsonState ): IPSet {
 		$ipset = new IPSet( [] );
-		$decoded = json_decode( $json, true );
-		$ipset->root4 = $decoded['ipv4'] ?? false;
-		$ipset->root6 = $decoded['ipv6'] ?? false;
+		$state = json_decode( $jsonState, true );
+		$ipset->root4 = $state['ipv4'] ?? false;
+		$ipset->root6 = $state['ipv6'] ?? false;
 
 		return $ipset;
 	}
