@@ -1,5 +1,10 @@
 # Release History
 
+## 6.0.1
+
+* Optimize `IPSet::addCidr` by reducing allocations and `ord()` calls (Ori Livneh)
+* IPSet: Add some type hints (Sam Reed)
+
 ## 6.0.0
 
 * Require PHP 8.1 or later (James D. Forrester)
