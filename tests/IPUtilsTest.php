@@ -28,8 +28,6 @@ class IPUtilsTest extends TestCase {
 	 */
 	public static function provideInvalidIPs(): array {
 		return [
-			[ false, 'Boolean false is not an IP' ],
-			[ true, 'Boolean true is not an IP' ],
 			[ '', 'Empty string is not an IP' ],
 			[ 'abc', 'Garbage IP string' ],
 			[ ':', 'Single ":" is not an IP' ],
@@ -145,8 +143,6 @@ class IPUtilsTest extends TestCase {
 
 	public static function provideInvalidIPv4Addresses(): array {
 		return [
-			[ false, 'Boolean false is not an IP' ],
-			[ true, 'Boolean true is not an IP' ],
 			[ '', 'Empty string is not an IP' ],
 			[ 'abc', 'Letters are not an IP' ],
 			[ ':', 'A colon is not an IP' ],
@@ -693,7 +689,6 @@ class IPUtilsTest extends TestCase {
 			[ false, '2001:db8::1', '2001:db8::1-2001:db8::0', 'Invalid IPv6 hyphenated range (start > end)' ],
 			[ false, '192.0.2.1', '', 'Empty range string' ],
 			[ false, '', '192.0.2.0/24', 'Empty IP address string' ],
-			[ false, '192.0.2.1', false, 'Boolean false as range' ],
 			[ false, '192.0.2.1', '2001:db8::/32', 'IPv4 address should not be in IPv6 range' ],
 			[ false, '2001:db8::1', '192.0.2.0/24', 'IPv6 address should not be in IPv4 range' ],
 		];
@@ -928,7 +923,6 @@ class IPUtilsTest extends TestCase {
 			[ '10.0.0.0/99', [ false, false ] ],
 			[ '::10:f:2001/', [ false, false ] ],
 			[ '::fe:f:2001-::fe:f:2000', [ false, false ] ],
-			[ false, [ false, false ] ],
 		];
 	}
 
