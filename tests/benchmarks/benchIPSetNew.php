@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 // Benchmark for IPSet::__construct.
 
 require_once dirname( __DIR__ ) . '/../src/IPSet.php';

@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 // Benchmark various ways to check if two IPs are equal.
 // See <https://gerrit.wikimedia.org/r/c/mediawiki/libs/IPUtils/+/1208413>
 

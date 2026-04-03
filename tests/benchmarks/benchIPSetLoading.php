@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 // Benchmark for loading and initialising IPSet from PHP array vs JSON.
 //
 // This compares loading IPSet with and without cached state against

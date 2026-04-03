@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 // Benchmark for IPUtils::isInRanges().
 
 require_once dirname( __DIR__ ) . '/../src/IPUtils.php';
