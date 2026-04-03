@@ -348,7 +348,7 @@ class IPUtils {
 	 * A bare IPv6 address is accepted despite the lack of square brackets.
 	 *
 	 * @param string $both The string with the host (or IPv4/IPv6 address) and port
-	 * @return array|false Array normally, false on certain failures
+	 * @return array{string,int|false}|false Array normally, false on certain failures
 	 */
 	public static function splitHostAndPort( $both ) {
 		if ( str_starts_with( $both, '[' ) ) {
@@ -505,7 +505,7 @@ class IPUtils {
 	 * sorts after the IPv4 addresses.
 	 *
 	 * @param string $ip Quad dotted/octet IPv6 address.
-	 * @return string|bool False on failure
+	 * @return string|false False on failure
 	 */
 	private static function toHex6( $ip ) {
 		$ip = self::sanitizeIPv6( $ip );
@@ -520,7 +520,7 @@ class IPUtils {
 	 * address.
 	 *
 	 * @param string $ip Quad dotted/octet IPv4 address.
-	 * @return string|bool False on failure
+	 * @return string|false False on failure
 	 */
 	private static function toHex4( $ip ) {
 		// T62035/T97897: An IP with leading 0's fails in ip2long sometimes (e.g. *.08),
@@ -554,7 +554,7 @@ class IPUtils {
 	 * hexadecimal string which sorts after the IPv4 addresses.
 	 *
 	 * @param string $ip Quad dotted/octet IP address.
-	 * @return string|bool False on failure
+	 * @return string|false False on failure
 	 */
 	public static function toHex( $ip ) {
 		if ( self::isIPv6( $ip ) ) {
@@ -585,7 +585,7 @@ class IPUtils {
 	 * to an integer network and a number of bits
 	 *
 	 * @param string $range IP with CIDR prefix
-	 * @return array [int|string, int]
+	 * @return array{string|int,int}|array{false,false}
 	 */
 	public static function parseCIDR( $range ) {
 		if ( self::isIPv6( $range ) ) {
@@ -722,7 +722,7 @@ class IPUtils {
 	 *
 	 * @param string $range
 	 *
-	 * @return array [string, string]|array [false, false] If the start or end of the range
+	 * @return array{string,string}|array{false,false} If the start or end of the range
 	 * is invalid, then array [false, false] is returned
 	 */
 	private static function parseRange6( $range ) {
@@ -768,14 +768,11 @@ class IPUtils {
 	 * @param string $hexIP The address (as hex) to check against the given range.
 	 * @param string $range The range to check the given address against.
 	 * @return bool Whether the given address is in the given range.
-	 *
-	 * @note This can return unexpected results for invalid arguments!
-	 *       Make sure you pass a valid IP address and IP range.
 	 */
 	private static function isHexInRange( $hexIP, $range ) {
 		[ $start, $end ] = self::parseRange( $range );
 
-		return strcmp( $hexIP, $start ) >= 0 &&
+		return $start !== false && strcmp( $hexIP, $start ) >= 0 &&
 			strcmp( $hexIP, $end ) <= 0;
 	}
 
@@ -786,13 +783,10 @@ class IPUtils {
 	 * @param string $range A CIDR range, explicit range, or single address.
 	 *  See IPUtils::isValidRange for examples.
 	 * @return bool Whether the given address is in the given range.
-	 *
-	 * @note This can return unexpected results for invalid arguments!
-	 *       Make sure you pass a valid IP address and IP range.
 	 */
 	public static function isInRange( $addr, $range ) {
 		$hexIP = self::toHex( $addr );
-		return self::isHexInRange( $hexIP, $range );
+		return $hexIP !== false && self::isHexInRange( $hexIP, $range );
 	}
 
 	/**

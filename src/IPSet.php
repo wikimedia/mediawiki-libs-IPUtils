@@ -71,11 +71,11 @@ use function strlen;
  * a net loss in my test scenarios due to additional match complexity)
  */
 class IPSet implements JsonSerializable {
-	/** @var array|bool The root of the IPv4 matching tree */
-	private array|bool $root4 = false;
+	/** @var array|false The root of the IPv4 matching tree */
+	private array|false $root4 = false;
 
-	/** @var array|bool The root of the IPv6 matching tree */
-	private array|bool $root6 = false;
+	/** @var array|false The root of the IPv6 matching tree */
+	private array|false $root6 = false;
 
 	/**
 	 * Instantiate the object from an array of CIDR specs
