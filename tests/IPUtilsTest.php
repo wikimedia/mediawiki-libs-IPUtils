@@ -428,6 +428,8 @@ class IPUtilsTest extends TestCase {
 			[ true, 'fc::3' ],
 			// public
 			[ true, '00FC::' ],
+			// not public, but we wrongly think it is
+			[ true, '::ffff:127.0.0.1' ],
 		];
 	}
 

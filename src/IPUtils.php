@@ -468,6 +468,9 @@ class IPUtils {
 	 * Determine if an IP address really is an IP address, and if it is public,
 	 * i.e. not RFC 1918 or similar
 	 *
+	 * WARNING: Do not rely on this in a security context; this does not comprehensively
+	 * cover the full range, such as IPv4-mapped addresses like ::ffff:127.0.0.1.
+	 *
 	 * @param string $ip
 	 * @return bool
 	 */
