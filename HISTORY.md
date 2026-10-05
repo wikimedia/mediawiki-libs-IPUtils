@@ -1,5 +1,12 @@
 # Release History
 
+## 6.0.2
+
+* `isPublic`: Warn against relying on this for security contexts (James D. Forrester)
+* Fix call to `base_convert` (Umherirrender)
+* Handle invalid IP in `IPUtils::isInRange()` and `::isHexInRange()` (Umherirrender)
+* Declare strict types on all PHP files (Umherirrender)
+
 ## 6.0.1
 
 * Optimize `IPSet::addCidr` by reducing allocations and `ord()` calls (Ori Livneh)
