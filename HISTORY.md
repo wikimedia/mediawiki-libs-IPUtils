@@ -1,5 +1,10 @@
 # Release History
 
+## 6.0.3
+
+* IPSet: Add test case for "matching anything" case (Umherirrender)
+* IPSet: Correct type annotations for root4/root6 to cover true state (James D. Forrester)
+
 ## 6.0.2
 
 * `isPublic`: Warn against relying on this for security contexts (James D. Forrester)
