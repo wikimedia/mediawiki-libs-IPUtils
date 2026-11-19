@@ -264,6 +264,17 @@ class IPSetTest extends TestCase {
 					'255.255.255.255' => false,
 				],
 			],
+			'matching anything' => [
+				[
+					'0.0.0.0/0',
+					'::/0'
+				],
+				[
+					'0.0.0.0' => true,
+					'1.2.3.4' => true,
+					'::' => true,
+				]
+			]
 		];
 		foreach ( $testcases as $desc => $pairs ) {
 			$testcases[$desc] = [
